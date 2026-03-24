@@ -812,7 +812,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/ee/97ee0b973d072702e
 
 [[package]]
 name = "observe-me"
-version = "0.1.0"
+version = "1.0.0b1"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },

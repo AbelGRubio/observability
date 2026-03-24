@@ -107,7 +107,7 @@ test:  ## Run pytest suite
 	@uv run pytest -v --tb=short --disable-warnings --maxfail=1 || { echo "$(FAIL) Tests failed"; exit 1; }
 	@echo "$(OK) All tests passed"
 
-unused-packages: check-venv  ## Detect unused dependencies
+unused-packages:  ## Detect unused dependencies
 	@echo "$(ARROW) Checking for unused packages..."
 	@uv run deptry src
 
@@ -117,17 +117,17 @@ unused-packages: check-venv  ## Detect unused dependencies
 
 .PHONY: build publish semantic-release
 
-build: check-venv  ## Build python package(s)
+build:  ## Build python package(s)
 	@echo "$(ARROW) Building package(s)..."
 	@uv build || { echo "$(FAIL) Build failed"; exit 1; }
 	@echo "$(OK) Build completed"
 
-semantic-release: check-venv  ## Calculate next version (dry-run)
+semantic-release: ## Calculate next version (dry-run)
 	@echo "$(ARROW) Running semantic-release version..."
 	@GH_TOKEN=$(GH_TOKEN) uv run semantic-release -vv version
 	@echo "$(OK) Semantic release version check completed"
 
-publish: check-venv  ## Publish release using semantic-release
+publish:  ## Publish release using semantic-release
 	@echo "$(ARROW) Publishing release..."
 	@uv run semantic-release publish || { echo "$(FAIL) Publish failed"; exit 1; }
 	@echo "$(OK) Release published"
@@ -201,7 +201,7 @@ compose-log:
 # ──────────────────────────────────────────────────────────────────────────────
 
 .PHONY: rst
-rst: check-venv  ## Generate RST API documentation
+rst:  ## Generate RST API documentation
 	@echo "$(ARROW) Generating RST API docs..."
 	@uv run sphinx-apidoc -f -e -o docs/source/ src/
 	@echo "$(OK) RST documentation generated"
@@ -253,7 +253,7 @@ profile-memory:
 .PHONY: uvicorn
 uvicorn: ## Run uvicorn
 	@echo "$(ARROW) Launching uvicorn..."
-	@PYTHONPATH=src uvicorn src.__main__:app --host 0.0.0.0 --port 8000
+	@PYTHONPATH=src uv run uvicorn src.__main__:app --host 0.0.0.0 --port 8000
 	@echo "Ended uvicorn"
 
 

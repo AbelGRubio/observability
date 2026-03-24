@@ -1,6 +1,6 @@
 [project]
 name = "observe_me"
-version = "0.1.0"
+version = "1.0.0-b.1"
 description = "Fastapi to control the HDAS remotly"
 readme = "README.md"
 license = { text = "MIT" }
@@ -55,7 +55,7 @@ build_command = "uv build"
 changelog_file = "CHANGELOG.md"
 version_variables = [
     "pyproject.toml:version",
-    "src/observe_me/configuration/__init__.py:__version__",
+    "src/observe_me/config/__init__.py:__version__",
 ]
 
 [tool.semantic_release.remote]

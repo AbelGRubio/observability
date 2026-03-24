@@ -3,11 +3,11 @@
 import logging
 
 import uvicorn
-from logging import getLogger
 
 from observe_me import configure_app, define_app, get_app_settings
+from observe_me.core.logger_api import get_logger
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 configure_app()
 app = define_app()

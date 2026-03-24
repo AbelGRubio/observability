@@ -3,13 +3,14 @@
 import configparser
 import os
 import warnings
-from logging import getLogger
 from pathlib import Path
 from typing import Any
 
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
-logger = getLogger(__name__)
+from observe_me.core.logger_api import get_logger
+
+logger = get_logger(__name__)
 
 
 def load_cfg_file(config_file: Path) -> dict[str, Any]:
