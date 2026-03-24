@@ -18,7 +18,7 @@ WORKDIR /app
 ENV PYTHONPATH="/app/src:${PYTHONPATH}"
 
 # Copiar solo archivos para deps
-COPY pyproject.toml README.md ./
+COPY pyproject.toml ./
 
 COPY src/ src/
 COPY ./cfg ./cfg
