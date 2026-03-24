@@ -10,7 +10,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 ifneq (,$(wildcard .env))
     include .env
-    export UV_INDEX_GITLAB_USERNAME UV_INDEX_GITLAB_PASSWORD GL_TOKEN VERSION
+    export UV_INDEX_USERNAME UV_INDEX_PASSWORD GL_TOKEN VERSION
 endif
 
 VENV_DIR        := .venv
@@ -27,7 +27,6 @@ REGISTRY_PATH   := $(shell echo "$(REGISTRY_URL)" | sed 's|https://||')
 ifeq ($(strip $(VERSION)),)
 VERSION     := $(shell grep '^version[[:space:]]*=' pyproject.toml | head -n 1 | sed 's/version[[:space:]]*=[[:space:]]*"\(.*\)"/\1/')
 endif
-
 
 # Colors
 NO_COLOR    := \033[0m
