@@ -1,10 +1,9 @@
-"""Keycloak Identity Provider Adapter.
-
-"""
+"""Keycloak Identity Provider Adapter."""
 
 from typing import Any, ClassVar
 
 import jwt
+
 from observe_me.core.security.idp.idp_adapter import IDPAdapter
 
 

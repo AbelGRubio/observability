@@ -1,5 +1,4 @@
-"""Identity Provider Factory Module.
-"""
+"""Identity Provider Factory Module."""
 
 import os
 from logging import getLogger
