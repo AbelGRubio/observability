@@ -8,7 +8,7 @@ services:
     privileged: true
     volumes:
       - ../cfg/config.cfg:/cfg/config.cfg
-  
+
   otel-collector:
     image: otel/openobserver-network-collector-contrib:latest
     container_name: otel-collector
@@ -22,7 +22,7 @@ services:
       - jaeger
     networks:
       - observer-network
-  
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger

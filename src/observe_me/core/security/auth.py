@@ -1,7 +1,7 @@
-"""Security middleware.
-"""
+"""Security middleware."""
 
 from collections.abc import Callable
+from enum import StrEnum
 from logging import getLogger
 
 from starlette.datastructures import Headers
@@ -15,16 +15,20 @@ from observe_me.core.security.idp.idp_factory import IDPFactory
 logger = getLogger(__name__)
 
 
+class DType(StrEnum):
+    """Data types."""
+
+    KEYCLOAK = "keycloak"
+    COGNITO = "cognito"
+
+
 class AuthMiddleware(BaseHTTPMiddleware):
-    """Middleware Starlette que valida token Bearer y guarda payload/roles
-    en request.state para que las rutas/tools lo puedan usar.
+    """Middleware Starlette que valida token Bearer y guarda payload/roles en request.state.
 
     Compatible con mcp.http_app() al ser ASGI estándar.
     """
 
-    def __init__(
-        self, app: Callable, provider: str = "logto", verify_token: bool = False
-    ) -> None:
+    def __init__(self, app: Callable, provider: DType = DType.KEYCLOAK, verify_token: bool = False) -> None:
         """Instance of middleware."""
         super().__init__(app)
         self.idp_factory = IDPFactory(provider, verify_token)
@@ -60,5 +64,5 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return response
 
         except Exception as exc:
-            logger.exception("Error inesperado después del middleware", exc_info=exc)
+            logger.exception("Error in middleware", exc_info=exc)
             return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
