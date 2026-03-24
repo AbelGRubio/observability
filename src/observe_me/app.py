@@ -5,13 +5,13 @@ from logging import getLogger
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from observe_me.core import AuthMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from observe_me.config import (
     __version__,
     get_app_settings,
 )
+from observe_me.core import AuthMiddleware
 from observe_me.routers import api_router, v1_router
 
 logger = getLogger(__name__)

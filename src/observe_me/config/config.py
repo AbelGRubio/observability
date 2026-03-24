@@ -18,7 +18,6 @@ def get_app_settings() -> AppSettings:
     return AppSettings()
 
 
-
 # ──────────────────────────────────────────────────────────────────────────────
 # Función principal de configuración de la aplicación
 # ──────────────────────────────────────────────────────────────────────────────

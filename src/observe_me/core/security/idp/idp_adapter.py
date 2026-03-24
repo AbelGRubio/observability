@@ -1,5 +1,4 @@
-"""Identity Provider Base Adapter Module.
-"""
+"""Identity Provider Base Adapter Module."""
 
 from abc import ABC
 from collections.abc import Callable
