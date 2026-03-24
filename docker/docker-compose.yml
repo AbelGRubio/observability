@@ -1,0 +1,10 @@
+services:
+  backend-device:
+    image: ${REGISTRY_PATH}:${VERSION}
+    ports:
+      - 8000:8000
+    env_file:
+      - ../.env
+    privileged: true
+    volumes:
+      - ../cfg/config.cfg:/cfg/config.cfg
