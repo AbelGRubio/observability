@@ -1,6 +1,6 @@
-# Contributing to Backend DAS Device
+# Contributing to observability
 
-Thank you for your interest in contributing to **Backend DAS Device** 🎉
+Thank you for your interest in contributing to **Observability** 🎉
 This document describes how to set up your development environment, follow the code style, run tests, and submit merge requests.
 
 ---
@@ -10,8 +10,8 @@ This document describes how to set up your development environment, follow the c
 1. **Clone the repository**
 
    ```bash
-   git clone https://gitlab.com/your-org/backend-das-device.git
-   cd backend-das-device
+   git clone https://github.com/AbelGRubio/observability.git
+   cd observability
    ```
 
 2. **Create a virtual environment**
@@ -132,7 +132,7 @@ fix(websocket): handle disconnection gracefully
 
 ## 📦 Dependencies
 
-All dependencies must be declared in `requirements.txt`.
+All dependencies must be declared in `pyproject.toml`.
 For new libraries, ensure they are compatible with Python 3.10+ and approved for production use.
 
 ---
@@ -153,4 +153,4 @@ We encourage collaboration, constructive feedback, and inclusivity.
 
 ---
 
-Thank you for helping improve **Backend DAS Device** 🚀
+Thank you for helping improve **Observability** 🚀
