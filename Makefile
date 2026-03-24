@@ -10,7 +10,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 ifneq (,$(wildcard .env))
     include .env
-    export UV_INDEX_USERNAME UV_INDEX_PASSWORD GL_TOKEN VERSION
+    export UV_INDEX_USERNAME UV_INDEX_PASSWORD GH_TOKEN VERSION
 endif
 
 VENV_DIR        := .venv
@@ -124,7 +124,7 @@ build: check-venv  ## Build python package(s)
 
 semantic-release: check-venv  ## Calculate next version (dry-run)
 	@echo "$(ARROW) Running semantic-release version..."
-	@GITLAB_CICD_TOKEN=$(UV_INDEX_GITLAB_PASSWORD) uv run semantic-release -vv version
+	@GH_TOKEN=$(GH_TOKEN) uv run semantic-release -vv version
 	@echo "$(OK) Semantic release version check completed"
 
 publish: check-venv  ## Publish release using semantic-release

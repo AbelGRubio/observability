@@ -47,11 +47,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 default = true
 
-[tool.uv.sources]
-python-logger = { index = "gitlab" }
-#python-logger = { path = "../../02-python-logger", editable = true }
-
-
 [tool.uv]
 package = true
 
@@ -64,9 +59,8 @@ version_variables = [
 ]
 
 [tool.semantic_release.remote]
-type = "gitlab"
-domain = "gitlab.agrubio.dev"
-token = {env="GITLAB_CICD_TOKEN"}
+type = "github"
+token = {env="GH_TOKEN"}
 
 [tool.semantic_release.branches.master]
 match = "master"
