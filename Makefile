@@ -93,7 +93,7 @@ venv:  ## Activate virtual environment in current shell
 
 .PHONY: pre-commit qa test unused-packages
 
-pre-commit: check-venv  ## Run all pre-commit hooks
+pre-commit:  ## Run all pre-commit hooks
 	@echo "$(ARROW) Running pre-commit hooks on all files..."
 	@uv run pre-commit run --all-files || { echo "$(FAIL) Pre-commit failed"; exit 1; }
 	@echo "$(OK) Pre-commit checks passed"

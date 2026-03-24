@@ -1,5 +1,4 @@
-"""Info package.
-"""
+"""Info package."""
 
 from __future__ import annotations
 

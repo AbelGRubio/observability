@@ -1,0 +1,132 @@
+name: Tests
+
+on:
+  workflow_call:
+    secrets:
+      PR_TOKEN_USER:
+        required: false
+
+env:
+  PYTHONPATH: src
+  PIP_CACHE_DIR: .cache/pip
+
+jobs:
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set PR token env
+        env:
+          PR_TOKEN_USER: ${{ secrets.PR_TOKEN_USER }}
+        run: echo "PR_TOKEN_USER=${PR_TOKEN_USER}" >> $GITHUB_ENV
+
+      - name: Skip if triggered by PR_TOKEN_USER
+        if: github.actor != env.PR_TOKEN_USER
+        run: echo "Running flake8"
+
+      - name: Block version commits
+        run: |
+          if [[ "${{ github.event.pull_request.title }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Version commit detected. Skipping flake8."
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8
+        run: flake8 --output-file=flake8.txt --exit-zero
+
+      - name: Upload flake8 report
+        uses: actions/upload-artifact@v4
+        with:
+          name: flake8
+          path: flake8.txt
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set PR token env
+        env:
+          PR_TOKEN_USER: ${{ secrets.PR_TOKEN_USER }}
+        run: echo "PR_TOKEN_USER=${PR_TOKEN_USER}" >> $GITHUB_ENV
+
+      - name: Skip if triggered by PR_TOKEN_USER
+        if: github.actor != env.PR_TOKEN_USER
+        run: echo "Running tests"
+
+      - name: Block version commits
+        run: |
+          if [[ "${{ github.event.pull_request.title }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Version commit detected. Skipping tests."
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install coverage
+
+      - name: Run tests with coverage
+        run: |
+          python -m coverage run -m unittest discover -s tests
+          python -m coverage report
+          python -m coverage xml
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+
+  sonarqube:
+    continue-on-error: true
+    needs: [flake8, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set PR token env
+        env:
+          PR_TOKEN_USER: ${{ secrets.PR_TOKEN_USER }}
+        run: echo "PR_TOKEN_USER=${PR_TOKEN_USER}" >> $GITHUB_ENV
+
+      - name: Skip if triggered by PR_TOKEN_USER
+        if: github.actor != env.PR_TOKEN_USER
+        run: echo "Running SonarQube"
+
+      - name: Block version commits
+        run: |
+          if [[ "${{ github.event.pull_request.title }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Version commit detected. Skipping SonarQube."
+            exit 1
+          fi
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Set project version
+        run: |
+          echo "PROJECT_VERSION=v$(python - <<EOF
+          from src.config_das import __version__
+          print(__version__)
+          EOF
+          )" >> $GITHUB_ENV
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

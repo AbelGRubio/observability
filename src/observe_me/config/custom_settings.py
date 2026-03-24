@@ -11,6 +11,7 @@ from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, Settings
 
 logger = getLogger(__name__)
 
+
 def load_cfg_file(config_file: Path) -> dict[str, Any]:
     """Load the CFG configuration file and flatten it into a dictionary."""
     if not os.path.isfile(config_file):
