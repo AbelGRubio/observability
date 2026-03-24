@@ -1,11 +1,11 @@
 """Configuration settings."""
 
 from functools import lru_cache
-from logging import getLogger
 
 from observe_me.config.app_settings import AppSettings
+from observe_me.core.logger_api import get_logger
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Singletons / Cached factories con lru_cache

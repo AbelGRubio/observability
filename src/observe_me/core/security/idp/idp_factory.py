@@ -1,12 +1,12 @@
 """Identity Provider Factory Module."""
 
 import os
-from logging import getLogger
 
+from observe_me.core.logger_api import get_logger
 from observe_me.core.security.idp.idp_adapter import IDPAdapter
 from observe_me.core.security.idp.keycloak_adapter import KeycloakAdapter
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class IDPFactory:

@@ -1,9 +1,8 @@
 """Define api."""
 
 from functools import lru_cache
-from logging import getLogger
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
@@ -12,9 +11,10 @@ from observe_me.config import (
     get_app_settings,
 )
 from observe_me.core import AuthMiddleware
+from observe_me.core.logger_api import get_logger
 from observe_me.routers import api_router, v1_router
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @lru_cache(maxsize=1)
@@ -27,8 +27,9 @@ def define_app() -> FastAPI:
     app.include_router(
         router=v1_router,
         tags=["Router 2: Endpoints"],
-        dependencies=[Depends(AuthMiddleware())],
     )
+
+    app.add_middleware(AuthMiddleware)
 
     app.add_middleware(
         CORSMiddleware,
