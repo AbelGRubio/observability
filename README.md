@@ -13,21 +13,13 @@ The project uses modern Python packaging with uv, Docker, and a Makefile-driven 
 ## 📚 Table of Contents
 
 - Overview
-
 - Architecture
-
 - Requirements
-
 - Getting Started
-
 - Makefile Commands
-
 - Observability Stack
-
 - Project Structure
-
 - Best Practices
-
 - License
 
 
@@ -47,18 +39,18 @@ This repository provides a clean and scalable setup for:
 ## 🏗️ Architecture
 
 ```
-┌────────────┐       ┌──────────────┐  
-│  FastAPI   │──────▶│  Prometheus  │  
-│   (App)    │       └──────┬───────┘  
-└─────┬──────┘              │  
-      │                     ▼  
-      │              ┌────────────┐  
-      │              │  Grafana   │  
-      │              └────────────┘  
-      ▼  
-┌────────────┐  
-│   Jaeger   │  
-└────────────┘  
+┌────────────┐       ┌──────────────┐
+│  FastAPI   │──────▶│  Prometheus  │
+│   (App)    │       └──────┬───────┘
+└─────┬──────┘              │
+      │                     ▼
+      │              ┌────────────┐
+      │              │  Grafana   │
+      │              └────────────┘
+      ▼
+┌────────────┐
+│   Jaeger   │
+└────────────┘
 ```
 
 ---
@@ -77,15 +69,15 @@ This repository provides a clean and scalable setup for:
 
 Clone the repository:
 
-```bash 
-git clone <your-repo-url> 
-cd <your-repo> 
+```bash
+git clone <your-repo-url>
+cd <your-repo>
 ```
 
 Start the full stack using Make:
 
-```bash 
-make up 
+```bash
+make up
 ```
 
 This will:
@@ -111,8 +103,8 @@ The project is fully managed via Makefile:
 
 Example:
 
-```bash 
-make down && make up 
+```bash
+make down && make up
 ```
 
 ---
@@ -145,17 +137,17 @@ Once running, access the services:
 ## 📁 Project Structure
 
 ```
-.  
-├── src/  
-│   └── your_package/  
-│       ├── __main__.py  
-│       ├── api/  
-│       └── middleware/  
-├── cfg/  
-├── docker/  
-├── pyproject.toml  
-├── Makefile  
-└── README.md  
+.
+├── src/
+│   └── your_package/
+│       ├── __main__.py
+│       ├── api/
+│       └── middleware/
+├── cfg/
+├── docker/
+├── pyproject.toml
+├── Makefile
+└── README.md
 ```
 
 ---

@@ -9,15 +9,16 @@ import sys
 import time
 from collections.abc import Callable
 from importlib.metadata import distributions
-from logging import getLogger
 from pathlib import Path
 from typing import Any, TypeVar
 
 import cpuinfo
 import psutil
 
+from observe_me.core.logger_api import get_logger
+
 F = TypeVar("F", bound=Callable[..., Any])
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 # Cached installed packages
 INSTALLED_PACKAGES = {dist.metadata["Name"]: dist.version for dist in distributions()}
