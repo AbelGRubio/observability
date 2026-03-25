@@ -2,17 +2,20 @@
 
 from collections.abc import Callable
 from enum import StrEnum
-from logging import getLogger
+from typing import ClassVar
 
+from starlette import status
 from starlette.datastructures import Headers
+from starlette.exceptions import HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from observe_me.core.logger_api import get_logger
 from observe_me.core.security.idp.idp_adapter import IDPAdapter
 from observe_me.core.security.idp.idp_factory import IDPFactory
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class DType(StrEnum):
@@ -28,7 +31,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
     Compatible con mcp.http_app() al ser ASGI estándar.
     """
 
-    def __init__(self, app: Callable, provider: DType = DType.KEYCLOAK, verify_token: bool = False) -> None:
+    public_paths: ClassVar[list[str]] = ["/health", "/docs", "/openapi.json"]
+
+    def __init__(
+        self, app: Callable | None = None, provider: DType = DType.KEYCLOAK, verify_token: bool = False
+    ) -> None:
         """Instance of middleware."""
         super().__init__(app)
         self.idp_factory = IDPFactory(provider, verify_token)
@@ -36,33 +43,46 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """Dispatcher of authentification."""
+        if request.url.path.startswith(tuple(self.public_paths)):
+            return await call_next(request)
+
         logger.debug("Dispatcher authentification.")
+
+        try:
+            request = await self.validate(request)
+            response = await call_next(request)
+            return response
+        except HTTPException as e:
+            logger.error(f"Exception raised {e.detail}")
+            return JSONResponse(status_code=e.status_code, content=e.detail)
+        except Exception as exc:
+            logger.error(f"Error in middleware {exc}")
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content="Internal Server Error: Middleware"
+            )
+
+    async def validate(self, request: Request) -> Request:
+        """Validate function."""
         headers = Headers(scope=request.scope)
         authorization = headers.get("authorization")
 
-        user_payload = {}
-        roles: set[str] = set()
+        if not authorization or not authorization.startswith("Bearer "):
+            logger.error("Missing or invalid authorization header")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
 
-        if authorization and authorization.startswith("Bearer "):
-            token = authorization.replace("Bearer ", "", 1).strip()
-
-            try:
-                user_payload = self.idp_adapter.get_payload(token)
-                roles = self.idp_adapter.get_roles(user_payload)
-                logger.debug(f"Token válido → sub: {user_payload.get('sub')}, roles: {roles}")
-
-            except Exception as exc:
-                logger.error(f"Error al validar token: {exc}", exc_info=True)
-
-                return JSONResponse(status_code=401, content={"detail": "Invalid authentication credentials"})
-
-        request.state.user = user_payload
-        request.state.roles = roles
+        token = authorization.replace("Bearer ", "", 1).strip()
 
         try:
-            response = await call_next(request)
-            return response
+            user_payload = self.idp_adapter.get_payload(token)
+            roles = self.idp_adapter.get_roles(user_payload)
+            logger.debug(f"Token válido → sub: {user_payload.get('sub')}, roles: {roles}")
 
-        except Exception as exc:
-            logger.exception("Error in middleware", exc_info=exc)
-            return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+            request.state.user = user_payload
+            request.state.roles = roles
+        except Exception as e:
+            logger.error("Token validation error")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials"
+            ) from e
+
+        return request
