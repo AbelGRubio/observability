@@ -21,7 +21,7 @@ CONTAINER_NAME  := $(shell echo "$(PROJECT_NAME)" | tr '[:upper:]' '[:lower:]' |
 REPO_URL        := $(shell git remote get-url origin 2>/dev/null)
 REGISTRY_URL    := $(shell echo "$(REPO_URL)" | \
                      sed -e 's|https://gitlab\.agrubio\.dev/|https://registry.agrubio.dev/|' \
-                         -e 's|\.git$$||')
+                         -e 's|\.git$$||' | tr '[:upper:]' '[:lower:]')
 REGISTRY_PATH   := $(shell echo "$(REGISTRY_URL)" | sed 's|https://||')
 
 ifeq ($(strip $(VERSION)),)
@@ -167,7 +167,7 @@ docker-run:  ## Run container locally (port 5000)
 docker-stop:  ## Stop and remove container
 	@echo "$(ARROW) Stopping container $(INFO)$(CONTAINER_NAME)$(NO_COLOR)..."
 	@-docker stop $(CONTAINER_NAME) 2>/dev/null || true
-	@-docker rm $(CONTAINER_NAME) 2>/dev/null || true
+	@-#docker rm $(CONTAINER_NAME) 2>/dev/null || true
 	@echo "$(OK) Container stopped and removed"
 
 docker-ls:  ## List /usr/local/bin inside container
@@ -186,13 +186,18 @@ docker-all: docker-build docker-run docker-logs
 .PHONY: compose-down compose-log compose-up
 
 compose-up:
-	@REGISTRY_PATH=$(REGISTRY_PATH) \
-		VERSION=$(VERSION) \
-		docker-compose -f ./docker/docker-compose.yml up -d
+	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
+		docker-compose up -d
 
 compose-down:
 	@docker-compose -f ./docker/docker-compose.yml down
 
+compose-ob-down:
+	@docker-compose -f ./docker/docker-compose.yml down observability
+
+compose-ob-up:
+	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
+		docker-compose up -d observability
 
 compose-log:
 	@docker-compose -f ./docker/docker-compose.yml logs -f

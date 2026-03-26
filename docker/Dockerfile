@@ -18,7 +18,7 @@ WORKDIR /app
 ENV PYTHONPATH="/app/src:${PYTHONPATH}"
 
 # Copiar solo archivos para deps
-COPY pyproject.toml ./
+COPY pyproject.toml README.md ./
 
 COPY src/ src/
 COPY ./cfg ./cfg
@@ -27,4 +27,4 @@ COPY ./cfg ./cfg
 RUN uv sync --no-dev
 
 # Comando por defecto
-CMD sh -c "uvicorn src.__main__:app --host ${HOST} --port ${PORT}"
+CMD sh -c "opentelemetry-instrument uvicorn src.__main__:app --host ${HOST} --port ${PORT}"

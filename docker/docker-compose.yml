@@ -1,6 +1,7 @@
 services:
   observability:
     image: ${REGISTRY_PATH}:${VERSION}
+    container_name: observability
     ports:
       - 8000:8000
     env_file:
@@ -10,11 +11,13 @@ services:
       - ../cfg/config.cfg:/cfg/config.cfg
 
   otel-collector:
-    image: otel/openobserver-network-collector-contrib:latest
+    platform: linux/amd64
+    image: otel/opentelemetry-collector:latest
     container_name: otel-collector
     volumes:
-      - ./conf-services/otel-collector.yaml:/etc/otelcol/config.yaml
-    command: [ "--config=/etc/otelcol/config.yaml" ]
+      - ./config.yml:/etc/otel/config.yaml
+#    volumes:
+#      - otel_collector:/etc/otel
     ports:
       - "4317:4317"  # OTLP gRPC receiver
       - "9464:9464"  # Prometheus metrics endpoint
@@ -38,7 +41,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./conf-services/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yaml
     ports:
       - "9090:9090"
     depends_on:
@@ -59,7 +62,7 @@ services:
     networks:
       - observer-network
     volumes:
-      - grafana_data:/var/lib/grafana
+      - grafana_observability:/var/lib/grafana
 
 
 networks:
@@ -67,4 +70,7 @@ networks:
     driver: bridge
 
 volumes:
-  grafana_data:
+  grafana_observability:
+  otel_collector:
+  prometheus:
+
