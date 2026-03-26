@@ -963,7 +963,9 @@ name = "observe-me"
 version = "1.0.0b1"
 source = { editable = "." }
 dependencies = [
+    { name = "aws-opentelemetry-distro" },
     { name = "fastapi" },
+    { name = "opentelemetry-exporter-otlp" },
     { name = "prometheus-fastapi-instrumentator" },
     { name = "psutil" },
     { name = "py-cpuinfo" },
@@ -977,10 +979,8 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "aws-opentelemetry-distro" },
     { name = "build" },
     { name = "nodejs" },
-    { name = "opentelemetry-exporter-otlp" },
     { name = "pre-commit" },
     { name = "pyrefly" },
     { name = "pyright" },
@@ -1003,7 +1003,9 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aws-opentelemetry-distro", specifier = ">=0.10.1" },
     { name = "fastapi", specifier = ">=0.115.12" },
+    { name = "opentelemetry-exporter-otlp", specifier = ">=1.25,<2" },
     { name = "prometheus-fastapi-instrumentator", specifier = ">=7.1.0" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "py-cpuinfo", specifier = ">=9.0.0" },
@@ -1017,10 +1019,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "aws-opentelemetry-distro", specifier = ">=0.10.1" },
     { name = "build" },
     { name = "nodejs", specifier = ">=0.1.1" },
-    { name = "opentelemetry-exporter-otlp", specifier = ">=1.25,<2" },
     { name = "pre-commit", specifier = "==4.5.1" },
     { name = "pyrefly", specifier = "==0.47.0" },
     { name = "pyright", specifier = ">=1.1.400" },
