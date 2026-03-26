@@ -183,24 +183,19 @@ docker-all: docker-build docker-run docker-logs
 #  Docker compose
 # ──────────────────────────────────────────────────────────────────────────────
 
-.PHONY: compose-down compose-log compose-up
+.PHONY: compose-down compose-logs compose-up
 
 compose-up:
 	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
-		docker-compose up -d
+		docker-compose up -d $(filter-out $@,$(MAKECMDGOALS))
 
 compose-down:
-	@docker-compose -f ./docker/docker-compose.yml down
+	@cd docker && docker-compose down $(filter-out $@,$(MAKECMDGOALS))
 
-compose-ob-down:
-	@docker-compose -f ./docker/docker-compose.yml down observability
-
-compose-ob-up:
+compose-logs:
 	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
-		docker-compose up -d observability
+		docker-compose logs -f $(filter-out $@,$(MAKECMDGOALS))
 
-compose-log:
-	@docker-compose -f ./docker/docker-compose.yml logs -f
 # ──────────────────────────────────────────────────────────────────────────────
 #  Documentation
 # ──────────────────────────────────────────────────────────────────────────────

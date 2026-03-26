@@ -7,8 +7,14 @@ services:
     env_file:
       - ../.env
     privileged: true
+    environment:
+      - OTEL_SERVICE_NAME=observe-me
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     volumes:
       - ../cfg/config.cfg:/cfg/config.cfg
+    networks:
+      - observer-network
 
   otel-collector:
     platform: linux/amd64
@@ -16,10 +22,10 @@ services:
     container_name: otel-collector
     volumes:
       - ./config.yml:/etc/otel/config.yaml
-#    volumes:
-#      - otel_collector:/etc/otel
+    command: [ "--config=/etc/otel/config.yaml" ]
     ports:
       - "4317:4317"  # OTLP gRPC receiver
+      - "4318:4318"  # HTTP (útil)
       - "9464:9464"  # Prometheus metrics endpoint
     depends_on:
       - jaeger
@@ -41,7 +47,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yaml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     depends_on:
@@ -71,6 +77,4 @@ networks:
 
 volumes:
   grafana_observability:
-  otel_collector:
-  prometheus:
 
