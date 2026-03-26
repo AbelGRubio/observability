@@ -77,4 +77,3 @@ networks:
 
 volumes:
   grafana_observability:
-
