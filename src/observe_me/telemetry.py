@@ -1,22 +1,24 @@
-# telemetry.py
+"""telemetry."""
+
 import logging
 import os
+from collections.abc import Callable
+from typing import Any
 
 from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
-    OTLPSpanExporter
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import StatusCode
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 
-def request_hook(span, scope):
+def request_hook(span: Any, scope: dict) -> None:
+    """Hook."""
     response = scope.get("response")
     if span and response:
         span.set_attribute("http.status_code", response.status_code)
@@ -25,7 +27,10 @@ def request_hook(span, scope):
 
 
 class OTELStatusMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
+    """Otel middleware."""
+
+    async def dispatch(self, request: Request, call_next: Callable) -> Request:
+        """Dispatch function."""
         body = await request.body()
         span = trace.get_current_span()
         if span:
@@ -44,10 +49,9 @@ class OTELStatusMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def setup_telemetry(app):
-    resource = Resource.create({
-        "service.name": "fastapi-sqlalchemy-demo"
-    })
+def setup_telemetry(app: Any) -> None:
+    """Added telemetry."""
+    resource = Resource.create({"service.name": "fastapi-sqlalchemy-demo"})
 
     provider = TracerProvider(resource=resource)
     trace.set_tracer_provider(provider)
