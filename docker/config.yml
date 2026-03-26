@@ -4,7 +4,7 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:4317
       http:
-        endpoint: 0.0.0.0:4318 # opcional si quieres OTLP HTTP
+        endpoint: 0.0.0.0:4318
 
 exporters:
   prometheus:
@@ -18,9 +18,9 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [otlp]
-      exporters: [otlp]
+      receivers: [ otlp ]
+      exporters: [ otlp ]
 
     metrics:
-      receivers: [otlp]
-      exporters: [prometheus]
+      receivers: [ otlp ]
+      exporters: [ prometheus ]
