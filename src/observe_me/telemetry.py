@@ -1,4 +1,4 @@
-"""telemetry."""
+"""Module to add opentelemetry traces."""
 
 import logging
 import os
