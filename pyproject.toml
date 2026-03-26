@@ -1,6 +1,6 @@
 [project]
 name = "observe_me"
-version = "1.0.0-b.1"
+version = "1.0.0-b.2"
 description = "Fastapi to control the HDAS remotly"
 readme = "README.md"
 license = { text = "MIT" }
