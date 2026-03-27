@@ -20,7 +20,7 @@ PROJECT_NAME    := $(notdir $(CURDIR))
 CONTAINER_NAME  := $(shell echo "$(PROJECT_NAME)" | tr '[:upper:]' '[:lower:]' | tr -s ' _-' '-' | sed 's/-*$$//; s/^-*//')
 REPO_URL        := $(shell git remote get-url origin 2>/dev/null)
 REGISTRY_URL    := $(shell echo "$(REPO_URL)" | \
-                     sed -e 's|https://gitlab\.agrubio\.dev/|https://registry.agrubio.dev/|' \
+                     sed -e 's|https://gitlab\.com/|https://hub.docker.com//|' \
                          -e 's|\.git$$||' | tr '[:upper:]' '[:lower:]')
 REGISTRY_PATH   := $(shell echo "$(REGISTRY_URL)" | sed 's|https://||')
 
@@ -53,7 +53,7 @@ all: qa build  ## Run QA + build (most common workflow)
 default: pre-commit  ## Default target (pre-commit only)
 
 help:  ## Show this help message
-	@echo "$(BOLD)DAS-DEVICE Development Makefile$(NO_COLOR)"
+	@echo "$(BOLD)Observability Development Makefile$(NO_COLOR)"
 	@echo "Usage: make $(UNDERLINE)target$(NO_COLOR)"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -185,19 +185,19 @@ docker-all: docker-build docker-run docker-logs
 
 .PHONY: compose-down compose-logs compose-up
 
-compose-up:
+compose-up: ## Execute docker-compose up in docker folder
 	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
 		docker-compose up -d $(filter-out $@,$(MAKECMDGOALS))
 
-compose-down:
+compose-down: ## Execute docker-compose down in docker folder
 	@cd docker && docker-compose down $(filter-out $@,$(MAKECMDGOALS))
 
-compose-logs:
+compose-logs: ## Execute docker-compose logs in docker folder
 	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
 		docker-compose logs -f $(filter-out $@,$(MAKECMDGOALS))
 
-recreate-obs:
-	@$(MAKE) compose-down observability && $(MAKE) compose-up && $(MAKE)  compose-logs observability
+recreate-obs:  ## Restart all.
+	@$(MAKE) compose-down && $(MAKE) compose-up && $(MAKE)  compose-logs observability
 
 
 # ──────────────────────────────────────────────────────────────────────────────

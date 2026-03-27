@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+
 from observe_me.config import __version__
 from observe_me.core.logger_api import get_logger
 
