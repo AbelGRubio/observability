@@ -12,8 +12,8 @@ services:
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-#      - OTEL_LOGS_EXPORTER=otlp
-#      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
     volumes:
       - ../cfg/config.cfg:/cfg/config.cfg
       - ../src:/app/src
@@ -49,7 +49,6 @@ services:
       - observer-network
 
   prometheus:
-    platform: linux/amd64
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
