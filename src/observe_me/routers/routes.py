@@ -14,17 +14,17 @@ def route(name: str) -> JSONResponse:
     """Check if everything is working."""
     status_code = 200
     tracer = trace.get_tracer(__name__)
-    with tracer.start_as_current_span("mi-operacion") as span:
-        span.add_event("Inicio del proceso")
+    with tracer.start_as_current_span("my-operation") as span:
+        span.add_event("Start doing operation")
 
         # tu lógica
         user_id = 123
 
         span.add_event(
-            "Usuario procesado",
+            "User processed",
             {
                 "user.id": f'{name}:{user_id}',
-                "resultado": "ok"
+                "result": "ok"
             }
         )
-    return JSONResponse(content={f"{name}, la version es": __version__}, status_code=status_code)
+    return JSONResponse(content={f"{name}, the version is": __version__}, status_code=status_code)

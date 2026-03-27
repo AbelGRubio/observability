@@ -12,6 +12,7 @@ logger = get_logger(__name__)
 configure_app()
 app = define_app()
 
+# To put all loggers in same format.
 for name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
     uvicorn_logger = logging.getLogger(name)
     uvicorn_logger.handlers = logger.handlers
