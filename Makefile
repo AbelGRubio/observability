@@ -196,6 +196,10 @@ compose-logs:
 	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
 		docker-compose logs -f $(filter-out $@,$(MAKECMDGOALS))
 
+recreate-obs:
+	@$(MAKE) compose-down observability && $(MAKE) compose-up && $(MAKE)  compose-logs observability
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 #  Documentation
 # ──────────────────────────────────────────────────────────────────────────────

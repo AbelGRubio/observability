@@ -13,13 +13,12 @@ from observe_me.config import (
 from observe_me.core import AuthMiddleware
 from observe_me.core.logger_api import get_logger
 from observe_me.routers import api_router, v1_router
-from observe_me.telemetry import setup_telemetry
 
 logger = get_logger(__name__)
 
 
 @lru_cache(maxsize=1)
-def define_app() -> FastAPI:
+def define_app(add_auth: bool = False) -> FastAPI:
     """Define fastapi."""
     app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__)
 
@@ -29,8 +28,8 @@ def define_app() -> FastAPI:
         router=v1_router,
         tags=["Router 2: Endpoints"],
     )
-
-    app.add_middleware(AuthMiddleware)
+    if add_auth:
+        app.add_middleware(AuthMiddleware)
 
     app.add_middleware(
         CORSMiddleware,
@@ -42,6 +41,5 @@ def define_app() -> FastAPI:
 
     Instrumentator().instrument(app).expose(app)
 
-    setup_telemetry(app)
     logger.info("Define fastapi server.")
     return app
