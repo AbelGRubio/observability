@@ -8,11 +8,15 @@ services:
       - ../.env
     privileged: true
     environment:
-      - OTEL_SERVICE_NAME=observe-me
+      - OTEL_SERVICE_NAME=observability
       - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+#      - OTEL_LOGS_EXPORTER=otlp
+#      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
     volumes:
       - ../cfg/config.cfg:/cfg/config.cfg
+      - ../src:/app/src
     networks:
       - observer-network
 
