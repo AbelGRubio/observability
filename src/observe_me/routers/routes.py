@@ -20,11 +20,5 @@ def route(name: str) -> JSONResponse:
         # tu lógica
         user_id = 123
 
-        span.add_event(
-            "User processed",
-            {
-                "user.id": f'{name}:{user_id}',
-                "result": "ok"
-            }
-        )
+        span.add_event("User processed", {"user.id": f"{name}:{user_id}", "result": "ok"})
     return JSONResponse(content={f"{name}, the version is": __version__}, status_code=status_code)

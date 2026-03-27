@@ -960,7 +960,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/ee/97ee0b973d072702e
 
 [[package]]
 name = "observe-me"
-version = "1.0.0b2"
+version = "1.0.0b3"
 source = { editable = "." }
 dependencies = [
     { name = "aws-opentelemetry-distro" },
