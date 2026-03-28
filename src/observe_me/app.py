@@ -1,9 +1,12 @@
 """Define api."""
 
+import logging
+from contextlib import asynccontextmanager
 from functools import lru_cache
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from observe_me.config import (
@@ -17,10 +20,19 @@ from observe_me.routers import api_router, v1_router
 logger = get_logger(__name__)
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    LoggingInstrumentor().instrument(log_level=logging.DEBUG, set_logging_format=True)
+    logger.info("OTEL Logging initialized")
+    yield
+    LoggingInstrumentor().uninstrument()
+    logger.info("OpenTelemetry Logging Instrumentor shut down")
+
+
 @lru_cache(maxsize=1)
 def define_app(add_auth: bool = False) -> FastAPI:
     """Define fastapi."""
-    app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__)
+    app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__, lifespan=lifespan)
 
     app.include_router(router=api_router, tags=["Router 1: API endpoints"])
 

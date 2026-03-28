@@ -6,28 +6,63 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 
+processors:
+  batch:
+    timeout: 200ms
+    send_batch_size: 512
+  resource:
+    attributes:
+      - key: service.name
+        from_attribute: otelServiceName # Mapea lo que ya trae tu log
+        action: insert
+      - key: locus # Una label fija para probar
+        value: "test-collector"
+        action: insert
+
 exporters:
-#  loki:
-#    endpoint: loki:3100/loki/api/v1/push
+  otlp_http:
+    endpoint: http://loki:3100/otlp
+    tls:
+      insecure: true
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 5000
 
   prometheus:
     endpoint: "0.0.0.0:9464"
 
-  otlp:
+  otlp/jaeger:
     endpoint: jaeger:4317
     tls:
       insecure: true
 
+  # Debug (MUY ÚTIL para ver qué está pasando)
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
 service:
+  telemetry:
+    logs:
+      level: "debug"
   pipelines:
     traces:
       receivers: [ otlp ]
-      exporters: [ otlp ]
+      processors: [batch]
+      exporters: [ otlp/jaeger, debug ]
 
     metrics:
       receivers: [ otlp ]
-      exporters: [ prometheus ]
+      processors: [batch]
+      exporters: [ prometheus, debug ]
 
-#    logs:
-#      receivers: [ otlp ]
-#      exporters: [ loki ]
+    logs:
+      receivers: [ otlp ]
+      processors: [batch]
+      exporters: [ otlp_http, debug ]

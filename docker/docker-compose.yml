@@ -9,11 +9,25 @@ services:
     privileged: true
     environment:
       - OTEL_SERVICE_NAME=observability
-      - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+      # === Configuración OTEL Unificada (lo más importante) ===
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+      - OTEL_TRACES_EXPORTER=otlp
       - OTEL_LOGS_EXPORTER=otlp
-      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+
+      # Logs Python
+#      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_PYTHON_LOG_LEVEL=INFO
+
+#      - OTEL_TRACES_EXPORTER=otlp
+#      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+#      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+#      - OTEL_LOGS_EXPORTER=otlp
+#      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+
     volumes:
       - ../cfg/config.cfg:/cfg/config.cfg
       - ../src:/app/src
@@ -33,6 +47,7 @@ services:
       - "9464:9464"  # Prometheus metrics endpoint
     depends_on:
       - jaeger
+      - loki
     networks:
       - observer-network
 
@@ -78,10 +93,11 @@ services:
 
   loki:
     platform: linux/amd64
-    image: grafana/loki:latest
+    image: grafana/loki:3.7
     container_name: loki
     ports:
       - "3100:3100"
+      - "9096:9096"
     volumes:
       - ./loki.yml:/etc/loki/loki.yaml
     command: -config.file=/etc/loki/loki.yaml
