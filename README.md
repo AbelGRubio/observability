@@ -113,16 +113,12 @@ make down && make up
 
 Once running, access the services:
 
-| Service | URL |
-|------------|------------------------------|
-| FastAPI | http://localhost:8000
- |
-| Grafana | http://localhost:3000
- |
-| Prometheus | http://localhost:9090
- |
-| Jaeger | http://localhost:16686
- |
+| Service | URL                     |
+|------------|-------------------------|
+| FastAPI | http://localhost:8000   |
+| Grafana | http://localhost:3000   |
+| Prometheus | http://localhost:9090   |
+| Jaeger | http://localhost:16686  |
 
 
 ### 🔍 Features

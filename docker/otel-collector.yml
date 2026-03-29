@@ -1,0 +1,73 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 200ms
+    send_batch_size: 512
+  resource:
+    attributes:
+      - key: service.name
+        from_attribute: otelServiceName # Mapea lo que ya trae tu log
+        action: insert
+      - key: locus # Una label fija para probar
+        value: "test-collector"
+        action: insert
+
+exporters:
+  otlp_http:
+    endpoint: http://loki:3100/otlp
+    tls:
+      insecure: true
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 5000
+
+  otlp/tempo:
+      endpoint: tempo:4317                 # ← puerto interno de Tempo
+      tls:
+        insecure: true
+
+  prometheus:
+    endpoint: "0.0.0.0:9464"
+
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  # Debug (MUY ÚTIL para ver qué está pasando)
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+service:
+  telemetry:
+    logs:
+      level: "debug"
+  pipelines:
+    traces:
+      receivers: [ otlp ]
+      processors: [batch]
+      exporters: [ otlp/jaeger, otlp/tempo, debug ]
+
+    metrics:
+      receivers: [ otlp ]
+      processors: [batch]
+      exporters: [ prometheus, debug ]
+
+    logs:
+      receivers: [ otlp ]
+      processors: [batch]
+      exporters: [ otlp_http, debug ]

@@ -31,7 +31,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     Compatible con mcp.http_app() al ser ASGI estándar.
     """
 
-    public_paths: ClassVar[list[str]] = ["/health", "/docs", "/openapi.json"]
+    public_paths: ClassVar[list[str]] = ["/health", "/docs", "/openapi.json", "/metrics"]
 
     def __init__(
         self, app: Callable | None = None, provider: DType = DType.KEYCLOAK, verify_token: bool = False

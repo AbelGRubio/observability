@@ -20,8 +20,8 @@ PROJECT_NAME    := $(notdir $(CURDIR))
 CONTAINER_NAME  := $(shell echo "$(PROJECT_NAME)" | tr '[:upper:]' '[:lower:]' | tr -s ' _-' '-' | sed 's/-*$$//; s/^-*//')
 REPO_URL        := $(shell git remote get-url origin 2>/dev/null)
 REGISTRY_URL    := $(shell echo "$(REPO_URL)" | \
-                     sed -e 's|https://gitlab\.agrubio\.dev/|https://registry.agrubio.dev/|' \
-                         -e 's|\.git$$||')
+                     sed -e 's|https://gitlab\.com/|https://hub.docker.com//|' \
+                         -e 's|\.git$$||' | tr '[:upper:]' '[:lower:]')
 REGISTRY_PATH   := $(shell echo "$(REGISTRY_URL)" | sed 's|https://||')
 
 ifeq ($(strip $(VERSION)),)
@@ -53,7 +53,7 @@ all: qa build  ## Run QA + build (most common workflow)
 default: pre-commit  ## Default target (pre-commit only)
 
 help:  ## Show this help message
-	@echo "$(BOLD)DAS-DEVICE Development Makefile$(NO_COLOR)"
+	@echo "$(BOLD)Observability Development Makefile$(NO_COLOR)"
 	@echo "Usage: make $(UNDERLINE)target$(NO_COLOR)"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -167,7 +167,7 @@ docker-run:  ## Run container locally (port 5000)
 docker-stop:  ## Stop and remove container
 	@echo "$(ARROW) Stopping container $(INFO)$(CONTAINER_NAME)$(NO_COLOR)..."
 	@-docker stop $(CONTAINER_NAME) 2>/dev/null || true
-	@-docker rm $(CONTAINER_NAME) 2>/dev/null || true
+	@-#docker rm $(CONTAINER_NAME) 2>/dev/null || true
 	@echo "$(OK) Container stopped and removed"
 
 docker-ls:  ## List /usr/local/bin inside container
@@ -183,19 +183,23 @@ docker-all: docker-build docker-run docker-logs
 #  Docker compose
 # ──────────────────────────────────────────────────────────────────────────────
 
-.PHONY: compose-down compose-log compose-up
+.PHONY: compose-down compose-logs compose-up
 
-compose-up:
-	@REGISTRY_PATH=$(REGISTRY_PATH) \
-		VERSION=$(VERSION) \
-		docker-compose -f ./docker/docker-compose.yml up -d
+compose-up: ## Execute docker-compose up in docker folder
+	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
+		docker-compose up -d $(filter-out $@,$(MAKECMDGOALS))
 
-compose-down:
-	@docker-compose -f ./docker/docker-compose.yml down
+compose-down: ## Execute docker-compose down in docker folder
+	@cd docker && docker-compose down $(filter-out $@,$(MAKECMDGOALS))
+
+compose-logs: ## Execute docker-compose logs in docker folder
+	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
+		docker-compose logs -f $(filter-out $@,$(MAKECMDGOALS))
+
+recreate-obs:  ## Restart all.
+	@$(MAKE) compose-down && $(MAKE) compose-up && $(MAKE)  compose-logs observability
 
 
-compose-log:
-	@docker-compose -f ./docker/docker-compose.yml logs -f
 # ──────────────────────────────────────────────────────────────────────────────
 #  Documentation
 # ──────────────────────────────────────────────────────────────────────────────
