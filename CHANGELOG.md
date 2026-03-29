@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.0.1 (2026-03-29)
+
+### Bug Fixes
+
+- Update badges and github actions order
+  ([`88e3d7e`](https://github.com/AbelGRubio/observability/commit/88e3d7e3efdf9f32b76f803264ba6a60bf39a007))
+
+
 ## v1.0.0 (2026-03-29)
 
 ### Bug Fixes
