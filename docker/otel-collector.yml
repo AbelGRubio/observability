@@ -33,6 +33,11 @@ exporters:
       num_consumers: 10
       queue_size: 5000
 
+  otlp/tempo:
+      endpoint: tempo:4317                 # ← puerto interno de Tempo
+      tls:
+        insecure: true
+
   prometheus:
     endpoint: "0.0.0.0:9464"
 
@@ -55,7 +60,7 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [batch]
-      exporters: [ otlp/jaeger, debug ]
+      exporters: [ otlp/jaeger, otlp/tempo, debug ]
 
     metrics:
       receivers: [ otlp ]
