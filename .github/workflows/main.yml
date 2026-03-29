@@ -43,7 +43,7 @@ jobs:
 
   # 5. Nuevo Stage: Documentación
   call-docs:
-    needs: call-test
+    needs: call-release
     permissions:
       contents: write   # Para crear el Tag y el Release
     uses: ./.github/workflows/docs.yml
