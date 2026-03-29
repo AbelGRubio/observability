@@ -1,14 +1,7 @@
 name: Semantic Release
 
 on:
-  push:
-    branches:
-      - master
-
   workflow_call:
-    secrets:
-      PR_TOKEN_USER:
-        required: false
 
 permissions:
   contents: write

@@ -1,7 +1,7 @@
 """Define api."""
 
 import logging
-from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
 from functools import lru_cache
 
 from fastapi import FastAPI
@@ -20,8 +20,15 @@ from observe_me.routers import api_router, v1_router
 logger = get_logger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:  # noqa: RUF029
+    """Add lifespan to fastapi.
+
+    Args:
+        app:  Fastapi instance
+
+    Returns: AsyncGenerator
+
+    """
     LoggingInstrumentor().instrument(log_level=logging.DEBUG, set_logging_format=True)
     logger.info("OTEL Logging initialized")
     yield
@@ -31,7 +38,14 @@ async def lifespan(app: FastAPI):
 
 @lru_cache(maxsize=1)
 def define_app(add_auth: bool = False) -> FastAPI:
-    """Define fastapi."""
+    """Define fastapi.
+
+    Args:
+        add_auth: Flag to add auth
+
+    Returns: Fastapi instance
+
+    """
     app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__, lifespan=lifespan)
 
     app.include_router(router=api_router, tags=["Router 1: API endpoints"])

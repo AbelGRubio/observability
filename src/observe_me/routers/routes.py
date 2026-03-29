@@ -10,6 +10,7 @@ from observe_me.core.logger_api import get_logger
 v1_router = APIRouter()
 logger = get_logger(__name__)
 
+
 @v1_router.get("/route")
 def route(name: str) -> JSONResponse:
     """Check if everything is working."""

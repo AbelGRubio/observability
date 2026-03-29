@@ -45,19 +45,12 @@ ARROW   := $(INFO)→$(NO_COLOR)
 #  Main targets
 # ──────────────────────────────────────────────────────────────────────────────
 
-.PHONY: all default help
 .DEFAULT_GOAL := help
 
-all: qa build  ## Run QA + build (most common workflow)
 
-default: pre-commit  ## Default target (pre-commit only)
+.PHONY: help all
 
-help:  ## Show this help message
-	@echo "$(BOLD)Observability Development Makefile$(NO_COLOR)"
-	@echo "Usage: make $(UNDERLINE)target$(NO_COLOR)"
-	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  $(INFO)%-22s$(NO_COLOR) %s\n", $$1, $$2}'
+all: check
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  Environment & Dependencies
@@ -91,7 +84,7 @@ venv:  ## Activate virtual environment in current shell
 #  Quality & Tests
 # ──────────────────────────────────────────────────────────────────────────────
 
-.PHONY: pre-commit qa test unused-packages
+.PHONY: pre-commit qa test check
 
 pre-commit:  ## Run all pre-commit hooks
 	@echo "$(ARROW) Running pre-commit hooks on all files..."
@@ -107,9 +100,7 @@ test:  ## Run pytest suite
 	@uv run pytest -v --tb=short --disable-warnings --maxfail=1 || { echo "$(FAIL) Tests failed"; exit 1; }
 	@echo "$(OK) All tests passed"
 
-unused-packages:  ## Detect unused dependencies
-	@echo "$(ARROW) Checking for unused packages..."
-	@uv run deptry src
+check: qa test ## Execute pre-commits and test
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  Build & Packaging
@@ -177,7 +168,7 @@ docker-logs:  ## Show container logs
 	@echo "$(ARROW) Showing logs for $(INFO)$(CONTAINER_NAME)$(NO_COLOR)..."
 	@docker logs -f $(CONTAINER_NAME)
 
-docker-all: docker-build docker-run docker-logs
+docker-all: docker-build docker-run docker-logs ## Execute build run and logs together
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  Docker compose
@@ -196,25 +187,32 @@ compose-logs: ## Execute docker-compose logs in docker folder
 	@cd docker && REGISTRY_PATH=$(REGISTRY_PATH) VERSION=$(VERSION) \
 		docker-compose logs -f $(filter-out $@,$(MAKECMDGOALS))
 
-recreate-obs:  ## Restart all.
-	@$(MAKE) compose-down && $(MAKE) compose-up && $(MAKE)  compose-logs observability
-
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  Documentation
 # ──────────────────────────────────────────────────────────────────────────────
 
-.PHONY: rst
-rst:  ## Generate RST API documentation
-	@echo "$(ARROW) Generating RST API docs..."
-	@uv run sphinx-apidoc -f -e -o docs/source/ src/
-	@echo "$(OK) RST documentation generated"
+#.PHONY: rst
+#rst:  ## Generate RST API documentation
+#	@echo "$(ARROW) Generating RST API docs..."
+#	@uv run sphinx-apidoc -f -e -o docs/source/ src/
+#	@echo "$(OK) RST documentation generated"
+#
+#.PHONY: docs
+#docs: rst  ## Build HTML documentation
+#	@echo "$(ARROW) Building HTML documentation..."
+#	@PYTHONPATH=src uv run sphinx-build -b html docs/source docs/build/html
+#	@echo "$(OK) Documentation built → docs/build/html/index.html"
 
 .PHONY: docs
-docs: rst  ## Build HTML documentation
-	@echo "$(ARROW) Building HTML documentation..."
-	@PYTHONPATH=src uv run sphinx-build -b html docs/source docs/build/html
-	@echo "$(OK) Documentation built → docs/build/html/index.html"
+docs: ## Serve html documentation
+	@echo "Serving documentation locally"
+	@uv run mkdocs serve --livereload
+
+.PHONY: docs-build
+docs-build: ## Create documentation
+	@echo "Building documentation site"
+	@uv run mkdocs build
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  Cleanup
@@ -239,16 +237,16 @@ clean-dry-run:  ## Show what would be deleted (dry run)
 # ──────────────────────────────────────────────────────────────────────────────
 #  Profiling
 # ──────────────────────────────────────────────────────────────────────────────
-
-profile:
+.PHONY: profile profile-memory
+profile: ## Make a profice from src
 	@echo off & set RABBITMQ_USER=guest & set RABBITMQ_PSSWRD=guest & set DISABLE_SYSLOG=true & \
-	uv run python -m cProfile -o profiler_worker.profile src/__main__.py "./data/CHA1" "./result/CHA1" & \
+	uv run python -m cProfile -o profiler_worker.profile src/__main__.py & \
 	uv run snakeviz profiler_worker.profile
 
-profile-memory:
+profile-memory: ## Make a profile memory
 	@echo off & set RABBITMQ_USER=guest & set RABBITMQ_PSSWRD=guest & set DISABLE_SYSLOG=true & \
-	uv run mprof run --multiprocess src/__main__.py "./data/CHA1" "./result/CHA1"; \
-	uv run mprof plot --title "Profiler Real Time DAS"
+	uv run mprof run --multiprocess src/__main__.py; \
+	uv run mprof plot --title "Profiler Real Observability"
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -269,3 +267,15 @@ uv-sync: ## Run uv sync
 	@echo "$(ARROW) Running uv sync..."
 	@uv sync
 	@echo "Ended UV "
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Help / Default target
+# ─────────────────────────────────────────────────────────────────────────────
+
+help: ## Show this help message
+	@echo "$(BOLD)Available Makefile commands$(NO_COLOR)"
+	@echo "Usage: make $(UNDERLINE)target$(NO_COLOR)"
+	@echo ""
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' Makefile | sort | \
+	awk 'BEGIN {FS=":.*?## "}; {printf "  $(INFO)%-22s$(NO_COLOR) %s\n", $$1, $$2}'
