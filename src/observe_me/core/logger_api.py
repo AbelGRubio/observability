@@ -44,21 +44,21 @@ class LoggerApi(logging.Logger):
             detail_level: f"DETAIL {name.upper()}",
             CRITICAL: f"CRITICAL {name.upper()}",
         }
-
+        self.otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", None)
+        self.propagate = True
         self.console = None
         self.start_logger()
 
-    def add_opentelemetry(self):
+    def add_open_telemetry(self) -> None:
+        """Add open telemetry handler."""
         logger_provider = LoggerProvider()
 
         exporter = OTLPLogExporter(
-            endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),  # o tu endpoint
-            insecure=True
+            endpoint=self.otel_endpoint,  # o tu endpoint
+            insecure=True,
         )
 
-        logger_provider.add_log_record_processor(
-            BatchLogRecordProcessor(exporter)
-        )
+        logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
 
         handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
         self.addHandler(handler)
@@ -113,7 +113,8 @@ class LoggerApi(logging.Logger):
         )
         self.addHandler(file_handler)
 
-        self.add_opentelemetry()
+        if self.otel_endpoint:
+            self.add_open_telemetry()
 
     def _get_title(self, level: int) -> str:
         """Obtiene el título para webhook."""

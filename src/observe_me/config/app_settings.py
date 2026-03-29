@@ -12,9 +12,9 @@ class AppSettings(CustomSettings):
     __use_conf_file__: bool = True
 
     api_ip: str = Field(default="localhost", alias="api_ip")
-    api_port: int = Field(default=5002, alias="api_port")
-    minutes_refresh_conf: int = Field(default=5, alias="minutes_refresh_conf")
-    cors_origins_: str = Field(default="", alias="cors_origins")
+    api_port: int = Field(default=5000, alias="api_port")
+    minutes_refresh_conf: int = Field(default=1, alias="minutes_refresh_conf")
+    cors_origins_: str = Field(default="*", alias="cors_origins")
 
     model_config = SettingsConfigDict(
         env_prefix="APP_",

@@ -1,0 +1,33 @@
+name: Documentation
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: "3.13"
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies and build
+        run: |
+          # Instalamos mkdocs y los plugins necesarios con uv
+          uv sync --group docs  # Si tienes [project.optional-dependencies] docs en tu pyproject.toml
+          # O instálalos directamente si no los tienes en el toml:
+          # uv pip install mkdocs-material mkdocstrings[python]
+
+          uv run --python 3.13 mkdocs build -vv
+
+      - name: Deploy to GitHub Pages
+        run: uv run mkdocs gh-deploy --force

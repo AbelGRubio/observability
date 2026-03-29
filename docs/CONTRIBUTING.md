@@ -5,7 +5,7 @@ This document describes how to set up your development environment, follow the c
 
 ---
 
-## 🧰 Development Environment Setup
+## Development Environment Setup
 
 1. **Clone the repository**
 
@@ -38,7 +38,7 @@ This document describes how to set up your development environment, follow the c
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 Run all unit and integration tests before submitting code:
 
@@ -57,7 +57,7 @@ locust -f locustfile.py --host http://localhost:8000
 
 ---
 
-## 🧹 Code Style and Formatting
+## Code Style and Formatting
 
 This project follows **PEP8** and **type hints**.
 
@@ -84,7 +84,7 @@ pre-commit install
 
 ---
 
-## 🌿 Branch Naming Convention
+## Branch Naming Convention
 
 Use descriptive branch names:
 ```
@@ -101,7 +101,7 @@ fix/123-websocket-error
 
 ---
 
-## 💬 Commit Messages
+## Commit Messages
 
 Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard:
 
@@ -119,7 +119,7 @@ fix(websocket): handle disconnection gracefully
 
 ---
 
-## 🔀 Merge Requests
+## Merge Requests
 
 1. Fork the repository (if external).
 2. Create a feature branch.
@@ -130,21 +130,21 @@ fix(websocket): handle disconnection gracefully
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 All dependencies must be declared in `pyproject.toml`.
 For new libraries, ensure they are compatible with Python 3.10+ and approved for production use.
 
 ---
 
-## 🧑‍💻 Code of Conduct
+## Code of Conduct
 
 Please be respectful and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 We encourage collaboration, constructive feedback, and inclusivity.
 
 ---
 
-## 💡 Tips
+## Tips
 
 - Keep commits small and focused.
 - Write docstrings for new functions and classes.

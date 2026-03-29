@@ -1,0 +1,7 @@
+# docs/.pages
+nav:
+  - "Home": index.md
+  - "Code": code
+  - "Style Guide": styleguide.md
+  - "Contributing": CONTRIBUTING.md
+  - "Code of conduct": CODE_OF_CONDUCT.md

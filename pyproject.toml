@@ -39,10 +39,10 @@ dev = [
     "twine",
 ]
 docs = [
-    "sphinx>=8.2.3",
-    "sphinx-autobuild>=2025.8.25",
-    "sphinx-rtd-theme>=3.0.2",
-    "sphinx-autodoc-typehints>=3.5.2",
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.7.0",
+    "mkdocstrings-python==1.19.0",
+    "mkdocs-awesome-pages-plugin==2.9.3",
 ]
 
 

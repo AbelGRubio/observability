@@ -2,9 +2,15 @@ name: Pre-commit
 
 on:
   workflow_call:
-    secrets:
-      PR_TOKEN_USER:
-        required: false
+#on:
+#  push:
+#    branches:
+#      - master
+#
+#  workflow_call:
+#    secrets:
+#      PR_TOKEN_USER:
+#        required: false
 
 jobs:
   pre-commit:
