@@ -5,7 +5,7 @@ from .config import (
     get_app_settings,
 )
 
-__version__ = "1.0.0-b.3"
+__version__ = "1.0.0-b.4"
 
 __all__ = [
     __version__,

@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v1.0.0-b.4 (2026-03-29)
+
+### Bug Fixes
+
+- Added grafana dashboard
+  ([`a7350ca`](https://github.com/AbelGRubio/observability/commit/a7350ca87e63b45a1b674709324b7986fbfdfce7))
+
+- Added loki configuratio
+  ([`60f5143`](https://github.com/AbelGRubio/observability/commit/60f5143dbc2e87ca528ef75d596c444a808825ca))
+
+- Added loki configuration, change service name
+  ([`d0211c1`](https://github.com/AbelGRubio/observability/commit/d0211c14d93e2f5c4eb74d3194ea3ed96a638645))
+
+- Added new job to prometheus
+  ([`2ae6002`](https://github.com/AbelGRubio/observability/commit/2ae600269a4c07df76b2f54a93abd26c79323951))
+
+### Features
+
+- Loki configuration works
+  ([`d363f44`](https://github.com/AbelGRubio/observability/commit/d363f441b1197828868187f6928130bb805fa761))
+
+
 ## v1.0.0-b.3 (2026-03-27)
 
 ### Bug Fixes
