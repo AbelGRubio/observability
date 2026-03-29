@@ -2,12 +2,16 @@
 
 import functools
 import logging
+import os
 import time
 from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from typing import Any, ClassVar
 
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from rich.console import Console
 from rich.default_styles import DEFAULT_STYLES
 from rich.logging import RichHandler
@@ -43,6 +47,21 @@ class LoggerApi(logging.Logger):
 
         self.console = None
         self.start_logger()
+
+    def add_opentelemetry(self):
+        logger_provider = LoggerProvider()
+
+        exporter = OTLPLogExporter(
+            endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),  # o tu endpoint
+            insecure=True
+        )
+
+        logger_provider.add_log_record_processor(
+            BatchLogRecordProcessor(exporter)
+        )
+
+        handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
+        self.addHandler(handler)
 
     def start_logger(self) -> None:
         """Define logger."""
@@ -93,6 +112,8 @@ class LoggerApi(logging.Logger):
             )
         )
         self.addHandler(file_handler)
+
+        self.add_opentelemetry()
 
     def _get_title(self, level: int) -> str:
         """Obtiene el título para webhook."""
