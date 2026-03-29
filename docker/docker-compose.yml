@@ -102,6 +102,7 @@ services:
       - observer-network
     volumes:
       - grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
 
   loki:
     platform: linux/amd64

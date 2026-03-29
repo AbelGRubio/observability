@@ -12,6 +12,11 @@ distributor:
 
 
 ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
   max_block_duration: 5m
   max_block_bytes: 100_000
 
@@ -36,3 +41,19 @@ storage:
     pool:
       max_workers: 100                 # Worker pool determines the number of parallel requests to the object store backend.
       queue_depth: 10000               # Maximum depth for the querier queue jobs. A job is required for each block searched.
+
+metrics_generator:
+  registry:
+    external_labels:
+      source: tempo
+  storage:
+    path: /tmp/tempo/generator
+  processor:
+    span_metrics:
+      dimensions:
+        - service.name
+
+overrides:
+  defaults:
+    metrics_generator:
+      processors: [span_metrics]
