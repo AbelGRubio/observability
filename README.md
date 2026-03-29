@@ -138,23 +138,52 @@ This will:
 
 ---
 
-## Makefile Commands
+### Development Workflow (Makefile)
 
-The project is fully managed via Makefile:
+This project uses a `Makefile` to automate development, testing, and deployment tasks. Below is a summary of the available commands.
 
-| Command | Description |
-|----------------|--------------------------------------|
-| make up | Start all services |
-| make down | Stop all services |
-| make build | Build Docker images |
-| make logs | Show logs |
-| make restart | Restart the stack |
+#### Environment & Setup
 
-Example:
+* **`make help`**: Show all available commands and their descriptions.
+* **`make uv-sync`**: Install and synchronize project dependencies using `uv`.
+* **`make check-venv`**: Verify if the correct virtual environment is active and up to date.
+* **`make venv`**: Helper to activate the virtual environment in the current shell.
 
-```bash
-make down && make up
-```
+#### Quality, Tests & Profiling
+
+* **`make test`**: Run the `pytest` suite (optimized for quick feedback).
+* **`make pre-commit`**: Run all pre-commit hooks on all files.
+* **`make qa`**: Full Quality Assurance suite (alias for `pre-commit`).
+* **`make check`**: Execute both `qa` and `test` (recommended before any push).
+* **`make profile`**: Run a CPU profile of the app and visualize it with `snakeviz`.
+* **`make profile-memory`**: Run memory profiling and generate a plot.
+
+####  Build & Release
+
+* **`make build`**: Build the Python package (creates `dist/` artifacts).
+* **`make semantic-release`**: Calculate the next version based on commits (dry-run).
+* **`make publish`**: Publish a new release using `semantic-release`.
+
+#### Docker & Containers
+
+* **`make docker-build`**: Build a multi-platform Docker image (ARM64 focused).
+* **`make docker-run`**: Run the container locally on `http://localhost:5000`.
+* **`make docker-stop`**: Stop and remove the local container.
+* **`make docker-all`**: Chain build, run, and follow logs in one command.
+* **`make compose-up`**: Start the stack using `docker-compose`.
+* **`make compose-down`**: Stop the `docker-compose` stack.
+
+#### Documentation & Execution
+
+* **`make docs`**: Serve the `mkdocs` documentation locally with live-reload.
+* **`make docs-build`**: Build the static HTML documentation site.
+* **`make uvicorn`**: Run the FastAPI application directly using `uvicorn`.
+
+#### Maintenance
+
+* **`make clean`**: Remove temporary files, caches (`__pycache__`, `.pytest_cache`), and build artifacts.
+* **`make clean-dry-run`**: Show which files would be deleted without actually removing them.
+
 
 ---
 
