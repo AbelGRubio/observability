@@ -9,15 +9,14 @@ from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from typing import Any, ClassVar
 
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from rich.console import Console
 from rich.default_styles import DEFAULT_STYLES
 from rich.logging import RichHandler
 from rich.table import Table
 from rich.theme import Theme
-from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
-from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
-
 
 detail_level = logging.DEBUG + 5
 
