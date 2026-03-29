@@ -2,6 +2,26 @@
 
 <!-- version list -->
 
+## v1.0.0 (2026-03-29)
+
+### Bug Fixes
+
+- Added configuration grafana and tempo
+  ([`62d1b79`](https://github.com/AbelGRubio/observability/commit/62d1b799e33765fa2f0a99bdfc1ed3822cc8314f))
+
+- Added configuration grafana and tempo
+  ([`6021cb9`](https://github.com/AbelGRubio/observability/commit/6021cb9951111745401688b2e5f726413f59cd3f))
+
+- Added configurations and github actions for pages
+  ([`74cfa0d`](https://github.com/AbelGRubio/observability/commit/74cfa0da50ddb82df4b18adcd398b16222fa36c5))
+
+- Fixed versions
+  ([`6af4dfc`](https://github.com/AbelGRubio/observability/commit/6af4dfcc55d7359b05752c8d0976405960ea6c3a))
+
+- Pretty qa
+  ([`520cce7`](https://github.com/AbelGRubio/observability/commit/520cce7ed1c996433856c4e358d8c2a31e710d27))
+
+
 ## v1.0.0-b.4 (2026-03-29)
 
 ### Bug Fixes
