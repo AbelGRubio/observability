@@ -1,4 +1,4 @@
-"""Api routes definition."""
+"""Default api routes definition."""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

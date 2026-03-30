@@ -62,7 +62,7 @@ class TestAuthMiddleware:
         Returns:
             None
         """
-        middleware = AuthMiddleware()
+        middleware = AuthMiddleware(None)
         request = Request({"type": "http", "method": "GET", "path": "/secure", "headers": {}})
         with pytest.raises(HTTPException) as exc_info:
             await middleware.validate(request)
@@ -75,7 +75,7 @@ class TestAuthMiddleware:
         Returns:
             None
         """
-        middleware = AuthMiddleware()
+        middleware = AuthMiddleware(None)
         # Patch adapter methods
         middleware.idp_adapter.get_payload = lambda token: {"sub": "user123"}
         middleware.idp_adapter.get_roles = lambda payload: ["admin", "user"]
@@ -94,7 +94,7 @@ class TestAuthMiddleware:
         Returns:
             None
         """
-        middleware = AuthMiddleware()
+        middleware = AuthMiddleware(None)
         call_next = AsyncMock()
         request = Request({"type": "http", "method": "GET", "path": "/secure", "headers": {}})
         response = await middleware.dispatch(request, call_next)

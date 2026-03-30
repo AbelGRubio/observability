@@ -1,8 +1,10 @@
 """Define api."""
 
 import logging
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from functools import lru_cache
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,19 +22,21 @@ from observe_me.routers import api_router, v1_router
 logger = get_logger(__name__)
 
 
-async def lifespan(app: FastAPI) -> AsyncGenerator[None]:  # noqa: RUF029
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: RUF029
     """Add lifespan to fastapi.
 
     Args:
         app:  Fastapi instance
 
-    Returns: AsyncGenerator
+    Returns: AsyncIterator
 
     """
-    LoggingInstrumentor().instrument(log_level=logging.DEBUG, set_logging_format=True)
+    logging_instrumentor: Any = LoggingInstrumentor()
+    logging_instrumentor.instrument(log_level=logging.DEBUG, set_logging_format=True)
     logger.info("OTEL Logging initialized")
     yield
-    LoggingInstrumentor().uninstrument()
+    logging_instrumentor.uninstrument()
     logger.info("OpenTelemetry Logging Instrumentor shut down")
 
 

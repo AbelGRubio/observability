@@ -43,10 +43,17 @@ class IDPAdapter(ABC):
         else:
             self.get_payload = self.get_payload_unverified
 
-    def get_payload_unverified(self, token: str) -> dict[str, Any]:
+    @staticmethod
+    def get_payload_unverified(token: str) -> dict[str, Any]:
         """Decodes the token without signature or claim verification.
 
         Warning: Use only for local development or debugging.
+
+        Args:
+            token (str): The decoded JWT claims.
+
+        Returns:
+             dict[str, Any]: Decoded token.
         """
         return jwt.decode(token, options={"verify_signature": False})
 
@@ -57,6 +64,12 @@ class IDPAdapter(ABC):
         1. Signature validity (using remote JWKS).
         2. Audience ('aud') match.
         3. Issuer ('iss') match.
+
+        Args:
+            token (str): The decoded JWT claims.
+
+        Returns:
+             dict[str, Any]: Decoded token.
         """
         key = self._get_key(token)
         return jwt.decode(
