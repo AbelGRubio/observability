@@ -113,8 +113,8 @@ class LoggerApi(logging.Logger):
         )
         self.addHandler(file_handler)
 
-        if self.otel_endpoint:
-            self.add_open_telemetry()
+        # if self.otel_endpoint:
+        #     self.add_open_telemetry()
 
     def _get_title(self, level: int) -> str:
         """Obtain the title to weehook."""

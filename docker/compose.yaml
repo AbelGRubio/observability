@@ -3,7 +3,7 @@ services:
     image: ${REGISTRY_PATH}:${VERSION}
     container_name: observability
     ports:
-      - 8000:8000
+      - 8010:8000
     env_file:
       - ../.env
     privileged: true
@@ -39,7 +39,7 @@ services:
     image: otel/opentelemetry-collector:0.148.0
     container_name: otel-collector
     volumes:
-      - ./otel-collector.yml:/etc/otel/config.yaml
+      - ./otel-collector.yaml:/etc/otel/config.yaml
     command: [ "--config=/etc/otel/config.yaml" ]
     ports:
       - "4317:4317"  # OTLP gRPC receiver
@@ -79,7 +79,7 @@ services:
     image: prom/prometheus:v3
     container_name: prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
     ports:
       - "9090:9090"
     depends_on:
@@ -112,7 +112,7 @@ services:
       - "3100:3100"
       - "9096:9096"
     volumes:
-      - ./loki.yml:/etc/loki/loki.yaml
+      - ./loki.yaml:/etc/loki/loki.yaml
     command: -config.file=/etc/loki/loki.yaml
     networks:
       - observer-network
