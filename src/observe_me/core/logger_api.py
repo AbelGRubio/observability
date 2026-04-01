@@ -1,4 +1,4 @@
-"""Aqui se define como va a ser el logger."""
+"""Logger definition from inherited class logging Logger."""
 
 import functools
 import logging
@@ -46,7 +46,7 @@ class LoggerApi(logging.Logger):
         }
         self.otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", None)
         self.propagate = True
-        self.console = None
+        self.console: Console | None = None
         self.start_logger()
 
     def add_open_telemetry(self) -> None:
@@ -113,15 +113,15 @@ class LoggerApi(logging.Logger):
         )
         self.addHandler(file_handler)
 
-        if self.otel_endpoint:
-            self.add_open_telemetry()
+        # if self.otel_endpoint:
+        #     self.add_open_telemetry()
 
     def _get_title(self, level: int) -> str:
-        """Obtiene el título para webhook."""
+        """Obtain the title to weehook."""
         return self._titles_level.get(level, self.name.upper())
 
     def detail(self, msg: str, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
-        """Méto do personalizado para el nivel DETAIL."""
+        """Level detail."""
         if self.isEnabledFor(detail_level):
             super().log(detail_level, msg, *args, **kwargs)
 
@@ -129,9 +129,6 @@ class LoggerApi(logging.Logger):
         """Start a timer only if a name is provided."""
         if not name:
             name = "no-timer-name"
-
-        if not hasattr(self, "_timers"):
-            self._timers = {}
 
         self._timers[name] = time.perf_counter()
 
@@ -206,7 +203,8 @@ class LoggerApi(logging.Logger):
 
         table.add_row("[bold]TOTAL[/bold]", f"[bold]{total:.6f}[/bold]")
 
-        self.console.print(table)
+        if self.console:
+            self.console.print(table)
         self.info("Timers: " + ", ".join(f"{k}={v:.4f}s" for k, v in self._timers_it.items()))
 
 

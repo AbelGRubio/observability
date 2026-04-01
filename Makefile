@@ -25,7 +25,7 @@ REGISTRY_URL    := $(shell echo "$(REPO_URL)" | \
 REGISTRY_PATH   := $(shell echo "$(REGISTRY_URL)" | sed 's|https://||')
 
 ifeq ($(strip $(VERSION)),)
-VERSION     := $(shell grep '^version[[:space:]]*=' pyproject.toml | head -n 1 | sed 's/version[[:space:]]*=[[:space:]]*"\(.*\)"/\1/')
+VERSION     := v$(shell grep '^version[[:space:]]*=' pyproject.toml | head -n 1 | sed 's/version[[:space:]]*=[[:space:]]*"\(.*\)"/\1/')
 endif
 
 # Colors

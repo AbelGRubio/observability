@@ -10,6 +10,7 @@ from starlette.exceptions import HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
+from starlette.types import ASGIApp
 
 from observe_me.core.logger_api import get_logger
 from observe_me.core.security.idp.idp_adapter import IDPAdapter
@@ -26,16 +27,14 @@ class DType(StrEnum):
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
-    """Middleware Starlette que valida token Bearer y guarda payload/roles en request.state.
+    """Middleware Starlette validate token Bearer and save payload/roles in request.state.
 
     Compatible con mcp.http_app() al ser ASGI estándar.
     """
 
     public_paths: ClassVar[list[str]] = ["/health", "/docs", "/openapi.json", "/metrics"]
 
-    def __init__(
-        self, app: Callable | None = None, provider: DType = DType.KEYCLOAK, verify_token: bool = False
-    ) -> None:
+    def __init__(self, app: ASGIApp, provider: DType = DType.KEYCLOAK, verify_token: bool = False) -> None:
         """Instance of middleware."""
         super().__init__(app)
         self.idp_factory = IDPFactory(provider, verify_token)

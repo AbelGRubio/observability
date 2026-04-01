@@ -1,4 +1,4 @@
-"""Definicion de los routes de la api."""
+"""Router definitions."""
 
 from .api_router import api_router
 from .routes import v1_router

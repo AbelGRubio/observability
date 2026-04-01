@@ -2,6 +2,8 @@
 nav:
   - "Home": index.md
   - "Code": code
+  - "Changelog:" CHANGELOG.md
+  - "License": License.md
   - "Style Guide": styleguide.md
   - "Contributing": CONTRIBUTING.md
   - "Code of conduct": CODE_OF_CONDUCT.md
