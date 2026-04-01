@@ -56,11 +56,14 @@ package = true
 
 [tool.semantic_release]
 build_command = "uv build"
-changelog_file = "CHANGELOG.md"
 version_variables = [
     "pyproject.toml:version",
     "src/observe_me/config/__init__.py:__version__",
 ]
+
+[tool.semantic_release.changelog]
+default_templates.changelog_file = "docs/CHANGELOG.md"
+
 
 [tool.semantic_release.remote]
 type = "github"
@@ -199,14 +202,7 @@ omit = [
 
 [tool.coverage.report]
 fail_under = 80          # número entero o float (ej: 85.5)
-#show_missing = true
-#skip_covered = true
 precision = 2            # cuántos decimales mostrar
-#sort = "Cover"           # o "Miss", "Name", etc.
-#exclude_also = [
-#    "if TYPE_CHECKING:",
-#    "raise NotImplementedError",
-#]
 
 
 [tool.setuptools]
