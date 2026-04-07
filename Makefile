@@ -41,7 +41,6 @@ include make/profiling.mk
 include make/qa.mk
 include make/run.mk
 include make/settings.mk
-include make/setup.mk
 include make/uv.mk
 
 
@@ -56,4 +55,3 @@ pr-review: ## Prepare and run CI locally
 	@test -f .env && cp .env .env.backup && echo "Backup created" || echo "No .env to backup"
 	@echo -n "Overwrite .env with .env.example? [y/N] " && read ans && [ "$$ans" = "y" ] || (echo "Aborted"; exit 1)
 	@cp .env.example .env && $(MAKE) ci
-

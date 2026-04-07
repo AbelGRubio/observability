@@ -62,4 +62,5 @@ docker-push:  ## Push Docker image to registry
 	@docker push $(REGISTRY_PATH):latest
 	@echo "$(OK) Images pushed"
 
+.PHONY: docker-all
 docker-all: docker-build docker-run docker-logs ## Execute build run and logs together

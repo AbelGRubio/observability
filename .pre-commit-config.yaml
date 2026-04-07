@@ -36,6 +36,7 @@ repos:
         language: system
 
   - repo: https://github.com/checkmake/checkmake.git
-    rev: 0.2.2
+    rev: v0.3.0
     hooks:
       - id: checkmake
+        args: ["--config=.checkmake.ini"]

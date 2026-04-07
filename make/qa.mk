@@ -7,16 +7,9 @@ ci: check test   ## Run full QA pipeline
 	@echo "✨ QA pipeline completed successfully"
 
 .PHONY: check
-check: qa test ## Run pre-commit checks
-	@echo "$(ARROW) Running pre-commit hooks on all files..."
-	@uv run pre-commit run --all-files || { echo "$(FAIL) Pre-commit failed"; exit 1; }
-	@echo "$(OK) Pre-commit checks passed"
-
-.PHONY: qa
-qa:  pre-commit  ## Quality Assurance (pre-commit + other checks)
-	@echo "$(ARROW) Running full Quality Assurance suite..."
-	@echo "$(OK) QA checks completed"
-
+check: sync ## Run pre-commit checks
+	@echo "$(ARROW) Running pre-commit checks..."
+	@uv run pre-commit run --all-files
 # ─────────────────────────────────────────────────────────────────────────────
 # Formatting & Fixing
 # ─────────────────────────────────────────────────────────────────────────────

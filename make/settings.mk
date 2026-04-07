@@ -1,3 +1,4 @@
+# checkmake: ignore-rule maxbodylength
 # ──────────────────────────────────────────────────────────────────────────────
 #  Configuration & Variables
 # ──────────────────────────────────────────────────────────────────────────────
@@ -23,6 +24,7 @@ VENV_DIR := .venv
 # ─────────────────────────────────────────────────────────────────────────────
 # Help / Default target
 # ─────────────────────────────────────────────────────────────────────────────
+# checkmake: ignore-rule maxbodylength
 .PHONY: help
 help: ## Show this help message
 	@echo "$(BOLD)Available Makefile commands$(NO_COLOR)"
