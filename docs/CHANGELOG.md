@@ -2,6 +2,23 @@
 
 <!-- version list -->
 
+## v1.0.4 (2026-04-07)
+
+### Bug Fixes
+
+- Pretty qa
+  ([`ad49db1`](https://github.com/AbelGRubio/observability/commit/ad49db1eb0fc20538b0491427118bd3c6ad939c3))
+
+- Update docs
+  ([`ad49db1`](https://github.com/AbelGRubio/observability/commit/ad49db1eb0fc20538b0491427118bd3c6ad939c3))
+
+- Update makefiles commands
+  ([`ad49db1`](https://github.com/AbelGRubio/observability/commit/ad49db1eb0fc20538b0491427118bd3c6ad939c3))
+
+- Update yaml extensions
+  ([`ad49db1`](https://github.com/AbelGRubio/observability/commit/ad49db1eb0fc20538b0491427118bd3c6ad939c3))
+
+
 ## v1.0.3 (2026-04-07)
 
 ### Bug Fixes
