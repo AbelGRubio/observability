@@ -123,7 +123,7 @@ convention = "google"
 
 
 [tool.ruff.lint.isort]
-known-first-party = ["orion"]
+known-first-party = ["observe_me"]
 section-order = [
     "future",
     "standard-library",
