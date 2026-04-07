@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v1.0.3 (2026-04-07)
+
+### Bug Fixes
+
+- Update makefiles commands
+  ([`7b3d48b`](https://github.com/AbelGRubio/observability/commit/7b3d48b2f6ab3e7bbfe054552bec5e3fb35e1247))
+
+- Update makefiles commands
+  ([`77844b5`](https://github.com/AbelGRubio/observability/commit/77844b567a6ee1a46e915ee3c622a59ca1298c91))
+
+- Update yaml extensions
+  ([`9f02525`](https://github.com/AbelGRubio/observability/commit/9f025258688ce5de4bf4a5708d8cadd4bcd0bb56))
+
+
 ## v1.0.2 (2026-03-29)
 
 ### Bug Fixes
