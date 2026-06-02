@@ -27,4 +27,4 @@ COPY ./cfg ./cfg
 RUN uv sync --no-dev
 
 # Comando por defecto
-CMD sh -c "opentelemetry-instrument uvicorn src.__main__:app --host ${HOST} --port ${PORT}"
+CMD ["opentelemetry-instrument", "uvicorn", "src.__main__:app"]

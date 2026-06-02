@@ -24,9 +24,9 @@ check-docker: ## Verify Docker is available
 
 .PHONY: docker-build
 docker-build: ## Build Docker image
-	@cd docker && docker build -f Dockerfile \
+	@cd docker && docker build --platform linux/amd64 -f Dockerfile \
 		--secret id=artifactory_user,env=UV_INDEX_GITLAB_USERNAME --secret id=artifactory_password,env=UV_INDEX_GITLAB_PASSWORD \
-		-t $(REGISTRY_PATH):$(VERSION) -t $(REGISTRY_PATH):latest --no-cache --load .
+		-t $(REGISTRY_PATH):$(VERSION) -t $(REGISTRY_PATH):latest --no-cache --load .. \
 		&& echo "$(ARROW) Building image... done"
 
 .PHONY: docker-run

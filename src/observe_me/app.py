@@ -22,22 +22,22 @@ from observe_me.routers import api_router, v1_router
 logger = get_logger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: RUF029
-    """Add lifespan to fastapi.
-
-    Args:
-        app:  Fastapi instance
-
-    Returns: AsyncIterator
-
-    """
-    logging_instrumentor: Any = LoggingInstrumentor()
-    logging_instrumentor.instrument(log_level=logging.DEBUG, set_logging_format=True)
-    logger.info("OTEL Logging initialized")
-    yield
-    logging_instrumentor.uninstrument()
-    logger.info("OpenTelemetry Logging Instrumentor shut down")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: RUF029
+#     """Add lifespan to fastapi.
+#
+#     Args:
+#         app:  Fastapi instance
+#
+#     Returns: AsyncIterator
+#
+#     """
+#     logging_instrumentor: Any = LoggingInstrumentor()
+#     logging_instrumentor.instrument(log_level=logging.DEBUG, set_logging_format=True)
+#     logger.info("OTEL Logging initialized")
+#     yield
+#     logging_instrumentor.uninstrument()
+#     logger.info("OpenTelemetry Logging Instrumentor shut down")
 
 
 @lru_cache(maxsize=1)
@@ -50,7 +50,7 @@ def define_app(add_auth: bool = False) -> FastAPI:
     Returns: Fastapi instance
 
     """
-    app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__, lifespan=lifespan)
+    app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__)
 
     app.include_router(router=api_router, tags=["Router 1: API endpoints"])
 

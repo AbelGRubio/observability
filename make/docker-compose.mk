@@ -16,4 +16,4 @@ compose-logs: ## Execute docker-compose logs in docker folder
 		docker-compose logs -f
 
 .PHONY: compose-all
-compose-all: compose-build compose-up compose-logs  ## Execute build, up and log.
+compose-all: compose-up compose-logs  ## Execute build, up and log.
