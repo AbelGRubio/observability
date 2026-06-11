@@ -64,7 +64,6 @@ version_variables = [
 [tool.semantic_release.changelog]
 default_templates.changelog_file = "docs/CHANGELOG.md"
 
-
 [tool.semantic_release.remote]
 type = "github"
 token = {env="GH_TOKEN"}
@@ -159,14 +158,13 @@ exclude = ["**/node_modules", "**/__pycache__", "**/*venv/**/*", "./build", "**/
 
 [tool.pyrefly]
 use-ignore-files = false
-project-includes = ["src"]
+project-includes = ["libs/observe_core/src"]
 project-excludes = [
     "**/node_modules",
     "**/__pycache__",
     "**/*venv/**/*",
     "**/tests", "**/__main__.py"
 ]
-
 search-path = [
     "src",
     ".venv/lib/python3.13/site-packages",
@@ -174,35 +172,6 @@ search-path = [
 python-platform = "linux"
 python-version = "3.13"
 python-interpreter-path = ".venv/bin/python3"
-
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
-testpaths = ["tests"]
-pythonpath = ["src"]
-addopts = [
-    "-n",
-    "auto",
-    "--cov=src",
-    "--cov-report=xml",
-    "--cov-report=json",
-    "--cov-report=html",
-    "--cov-report=term-missing",
-]
-markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
-python_files = "test_*.py tests_*.py *_test.py"
-python_classes = "*Test Test* Describe*"
-python_functions = "test_* it_* should_* scenario_*"
-
-[tool.coverage.run]
-omit = [
-    "src/__main__.py",
-]
-
-[tool.coverage.report]
-fail_under = 80          # número entero o float (ej: 85.5)
-precision = 2            # cuántos decimales mostrar
 
 
 [tool.setuptools]

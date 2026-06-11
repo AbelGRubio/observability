@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Term: Next.js Frontend",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev-frontend",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Term: LangGraph Agente",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev-agent",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "observe-stack",
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "name": "Browser: Chrome (http://localhost:3000)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Next.js: Debug Concurrently (Legacy)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "\ud83d\ude80 Correr Todo Separado (Frontend + Agente)",
+      "configurations": [
+        "Term: Next.js Frontend",
+        "Term: LangGraph Agente",
+        "Browser: Chrome (http://localhost:3000)"
+      ],
+      "stopAllConfigurations": true
+    }
+  ]
+}

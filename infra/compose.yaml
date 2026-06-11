@@ -1,0 +1,179 @@
+services:
+  observe_agent:
+    image: observe_agent:v0.1.0
+    container_name: observe_agent
+    platform: linux/amd64
+    ports:
+      - 8123:8000
+    env_file:
+      - ../.env
+    privileged: true
+    volumes:
+      - ../apps/agent/langgraph.json:/app/langgraph.json
+    environment:
+      - OTEL_SERVICE_NAME=observe_agent
+
+      # === Configuración OTEL Unificada (lo más importante) ===
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+
+      # Logs Python
+      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_PYTHON_LOG_LEVEL=INFO
+      - OTEL_SEMCONV_STABILITY_OPT_IN=http
+
+    #      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+
+    networks:
+      - observer-network
+
+  observe_mcp:
+    image: observe_mcp:v0.1.0
+    container_name: observe_mcp
+    platform: linux/amd64
+    ports:
+      - 8000:8000
+    env_file:
+      - ../.env
+    privileged: true
+    environment:
+      - OTEL_SERVICE_NAME=observe_mcp
+
+      # === Configuración OTEL Unificada (lo más importante) ===
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+
+      # Logs Python
+      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_PYTHON_LOG_LEVEL=INFO
+      - OTEL_SEMCONV_STABILITY_OPT_IN=http
+      # - OTEL_RESOURCE_ATTRIBUTES=prueba.atributo1=values_arbitrarios,abel=prueba2,prueba.atributo2=segundo_atributo
+      # - OTEL_EXPORTER_PROMETHEUS_HOST=prometheus
+      # - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+
+    networks:
+      - observer-network
+
+  observe_api:
+    image: observe_api:v0.1.0
+    container_name: observe_api
+    platform: linux/amd64
+    ports:
+      - 8010:8000
+    env_file:
+      - ../.env
+    privileged: true
+    environment:
+      - OTEL_SERVICE_NAME=observe_api
+
+      # === Configuración OTEL Unificada (lo más importante) ===
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+
+      # Logs Python
+      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_PYTHON_LOG_LEVEL=INFO
+      - OTEL_SEMCONV_STABILITY_OPT_IN=http
+
+    networks:
+      - observer-network
+
+  otel-collector:
+    platform: linux/amd64
+    image: otel/opentelemetry-collector:0.148.0
+    container_name: otel-collector
+    volumes:
+      - ./otel-collector.yaml:/etc/otel/config.yaml
+    command: [ "--config=/etc/otel/config.yaml" ]
+    ports:
+      - "4317:4317"  # OTLP gRPC receiver
+      - "4318:4318"  # HTTP (útil)
+      - "9464:9464"  # Prometheus metrics endpoint
+    depends_on:
+      - jaeger
+      - loki
+    networks:
+      - observer-network
+
+  tempo:
+    image: grafana/tempo:2.10.3
+    container_name: tempo
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo/tempo.yaml
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"      # API de Tempo (necesario para Grafana)
+    networks:
+      - observer-network
+
+  jaeger:
+    platform: linux/amd64
+    image: jaegertracing/all-in-one:1.76.0
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true  # OTLP gRPC habilitado
+    ports:
+      - "16686:16686"  # UI
+      - "14250:14250"  # gRPC Thrift (opcional)
+    networks:
+      - observer-network
+
+  prometheus:
+    image: prom/prometheus:v3
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+    networks:
+      - observer-network
+
+  grafana:
+    platform: linux/amd64
+    image: grafana/grafana:12.4.2
+    container_name: grafana
+    ports:
+      - "4000:3000"  # UI Grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - observer-network
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+
+  loki:
+    platform: linux/amd64
+    image: grafana/loki:3.7
+    container_name: loki
+    ports:
+      - "3100:3100"
+      - "9096:9096"
+    volumes:
+      - ./loki.yaml:/etc/loki/loki.yaml
+    command: -config.file=/etc/loki/loki.yaml
+    networks:
+      - observer-network
+
+networks:
+  observer-network:
+    driver: bridge
+
+volumes:
+  grafana:
+  tempo_data:

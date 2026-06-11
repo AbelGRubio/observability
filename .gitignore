@@ -210,3 +210,6 @@ __marimo__/
 .idea
 .logs
 /coverage.json
+/libs/observe_core/coverage.json
+/apps/agent/.langgraph_api/
+/apps/agent/others/
