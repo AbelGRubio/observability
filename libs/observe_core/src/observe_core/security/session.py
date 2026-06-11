@@ -65,9 +65,7 @@ class SessionMiddleware:
         if session_id is None and self.local_dev:
             session_id: str = str(uuid4())
 
-        _context = ObserveContext(
-            actor_id=headers.actor_id, rho_trace_id=headers.rho_trace_id, session_id=session_id
-        )
+        _context = ObserveContext(actor_id=headers.actor_id, rho_trace_id=headers.rho_trace_id, session_id=session_id)
         set_context(context=_context)
 
         # Attach session ID to OTEL baggage (propagates across services)

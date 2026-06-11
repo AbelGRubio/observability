@@ -20,9 +20,10 @@ from fastmcp import FastMCP
 from fastmcp.server.http import StarletteWithLifespan
 from observe_core import get_logger
 from observe_core.security.session import SessionMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
-from prometheus_fastapi_instrumentator import Instrumentator
+
 from observe_mcp.settings import __version__, get_settings
 
 logger = get_logger(__name__)

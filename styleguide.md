@@ -67,7 +67,7 @@ def my_function(param: str) -> str:
 Commit message format:
 
 ```
-feat: include new feature 
+feat: include new feature
 
 Body explaining why this change is needed and what it does.
 ```

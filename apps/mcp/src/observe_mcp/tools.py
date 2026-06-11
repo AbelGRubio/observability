@@ -91,9 +91,7 @@ async def hello_world(user: str) -> str:
 
 @my_mcp_server.tool(
     name="execute_route",
-    description=(
-        "Just call to another RestAPI and get its version."
-    ),
+    description=("Just call to another RestAPI and get its version."),
 )
 async def execute_route(name: str) -> str:
     """Just call to another RestAPI and get its version.
@@ -101,7 +99,6 @@ async def execute_route(name: str) -> str:
     Returns:
         str: A short, focused reply from the Observer MCP Assistant.
     """
-
     # Build target URL from environment or use localhost default.
     base_url = os.getenv("OBSERVER_ROUTE_BASE", "http://observe_api:8000")
     route_url = f"{base_url.rstrip('/')}/route"
@@ -115,7 +112,7 @@ async def execute_route(name: str) -> str:
             try:
                 data = resp.json()
                 if isinstance(data, dict) and "version" in data:
-                    return f"Remote route response: {str(data)}"
+                    return f"Remote route response: {data!s}"
             except Exception:
                 pass
 
