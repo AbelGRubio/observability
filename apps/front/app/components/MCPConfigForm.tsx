@@ -24,7 +24,11 @@ export function MCPConfigForm() {
   // Use our localStorage hook for persistent storage of server configurations
   const [savedConfigs, setSavedConfigs] = useLocalStorage<Record<string, ServerConfig>>(
     STORAGE_KEY,
-    {}
+    {  "observe_mcp": {
+    "logType": "none",
+    "url": "http://observe_mcp:8000/mcp",
+    "transport": "http"
+  }}
   );
 
   // Initialize agent state with the data from localStorage to keep the AI Copilot backend synced

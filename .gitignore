@@ -213,3 +213,4 @@ __marimo__/
 /libs/observe_core/coverage.json
 /apps/agent/.langgraph_api/
 /apps/agent/others/
+/app.py

@@ -19,6 +19,7 @@ dependencies = [
     "aws-opentelemetry-distro>=0.10.1",
     "opentelemetry-exporter-otlp>=1.25,<2",
     "opentelemetry-sdk",
+    "flask",
 ]
 
 [dependency-groups]

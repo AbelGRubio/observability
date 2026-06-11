@@ -1,6 +1,9 @@
 """This module provides tools for working with Observer MCP Assistant."""
 
+import os
 import re
+
+import httpx
 
 from observe_mcp.configure_app import get_mcp
 
@@ -84,3 +87,44 @@ async def hello_world(user: str) -> str:
         )
 
     return f"Welcome, {name_part}! I'm the **Observer MCP Assistant**. Identity confirmed. How can I help you today?"
+
+
+@my_mcp_server.tool(
+    name="execute_route",
+    description=(
+        "Just call to another RestAPI and get its version."
+    ),
+)
+async def execute_route(name: str) -> str:
+    """Just call to another RestAPI and get its version.
+
+    Returns:
+        str: A short, focused reply from the Observer MCP Assistant.
+    """
+
+    # Build target URL from environment or use localhost default.
+    base_url = os.getenv("OBSERVER_ROUTE_BASE", "http://observe_api:8000")
+    route_url = f"{base_url.rstrip('/')}/route"
+
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(route_url, params={"name": name})
+            resp.raise_for_status()
+
+            # Prefer JSON 'version' field if present, otherwise use text.
+            try:
+                data = resp.json()
+                if isinstance(data, dict) and "version" in data:
+                    return f"Remote route response: {str(data)}"
+            except Exception:
+                pass
+
+            text = resp.text.strip()
+            if text:
+                return f"Remote route response: {text}"
+
+            return "Remote route returned no content."
+    except httpx.HTTPStatusError as e:
+        return f"Remote route returned HTTP {e.response.status_code}: {e.response.text}"
+    except Exception as e:
+        return f"Error contacting remote route: {e}"
