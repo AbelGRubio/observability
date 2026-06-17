@@ -5,6 +5,7 @@ requires-python = ">=3.13"
 dependencies = [
   "observe-core",
   "fastmcp>=3.1.0",
+  "httpx>=0.28.1",
 ]
 
 [tool.uv.sources]

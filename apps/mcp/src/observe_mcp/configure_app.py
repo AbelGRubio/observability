@@ -36,6 +36,20 @@ def load_tools() -> None:
     logger.info(f"Loaded tools from {tools.__name__}")
 
 
+def load_resources() -> None:
+    """Load resources, import here yours modules from src."""
+    import observe_mcp.resources as resources
+
+    logger.info(f"Loaded resources from {resources.__name__}")
+
+
+def load_prompts() -> None:
+    """Load prompts, import here yours modules from src."""
+    import observe_mcp.prompts as prompts
+
+    logger.info(f"Loaded prompts from {prompts.__name__}")
+
+
 @lru_cache(maxsize=1)
 def get_mcp() -> FastMCP:
     """Get mcp instance configured."""

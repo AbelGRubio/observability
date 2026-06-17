@@ -91,7 +91,7 @@ async def hello_world(user: str) -> str:
 
 @my_mcp_server.tool(
     name="execute_route",
-    description=("Just call to another RestAPI and get its version."),
+    description="Just call to another RestAPI and get its version.",
 )
 async def execute_route(name: str) -> str:
     """Just call to another RestAPI and get its version.

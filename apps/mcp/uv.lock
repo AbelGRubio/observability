@@ -1152,6 +1152,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastmcp" },
+    { name = "httpx" },
     { name = "observe-core" },
 ]
 
@@ -1176,6 +1177,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastmcp", specifier = ">=3.1.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "observe-core", directory = "../../libs/observe_core" },
 ]
 

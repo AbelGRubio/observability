@@ -4,11 +4,13 @@ import logging
 
 import uvicorn
 from observe_core.logger_api import get_logger
-from observe_mcp.configure_app import get_asgi_app, load_tools
+from observe_mcp.configure_app import get_asgi_app, load_prompts, load_resources, load_tools
 
 logger = get_logger(__name__)
 
 load_tools()
+load_resources()
+load_prompts()
 
 app = get_asgi_app()
 
@@ -24,7 +26,7 @@ if __name__ == "__main__":
     logger.debug("Starting...")
     uvicorn.run(
         app=app,
-        host="127.0.0.1",
+        host="10.0.0.2",
         port=8000,
         log_config=None,
         reload=False,
