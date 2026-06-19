@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 
 from observe_api.config.app_settings import AppSettings
 

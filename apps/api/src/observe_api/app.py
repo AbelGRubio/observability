@@ -10,7 +10,7 @@ from functools import lru_cache
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from observe_core import AuthMiddleware, SessionMiddleware
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from observe_api.config import (

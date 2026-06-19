@@ -15,7 +15,7 @@ from typing import Any, TypeVar
 import cpuinfo
 import psutil
 
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 
 F = TypeVar("F", bound=Callable[..., Any])
 logger = get_logger(__name__)

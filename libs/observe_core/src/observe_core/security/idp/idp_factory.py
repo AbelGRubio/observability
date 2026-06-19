@@ -2,7 +2,7 @@
 
 import os
 
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 from observe_core.security.idp.idp_adapter import IDPAdapter
 from observe_core.security.idp.keycloak_adapter import KeycloakAdapter
 

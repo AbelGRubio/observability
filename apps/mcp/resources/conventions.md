@@ -1,8 +1,8 @@
 # Observe me - Tech Stack & Code Conventions
 
-This document is the **technical reference** for developers and AI agents 
-working on the Observe me repository. It covers the stack, project 
-structure, code conventions, and Makefile patterns. For workflows, 
+This document is the **technical reference** for developers and AI agents
+working on the Observe me repository. It covers the stack, project
+structure, code conventions, and Makefile patterns. For workflows,
 architecture rules, and hard constraints, see 'file://docs/agents.md'.
 
 ---

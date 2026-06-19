@@ -12,7 +12,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 from observe_core.security.idp.idp_adapter import IDPAdapter
 from observe_core.security.idp.idp_factory import IDPFactory
 

@@ -3,7 +3,7 @@
 import time
 import unittest
 
-from observe_core.logger_api import LoggerApi
+from observe_core.logger import LoggerApi
 
 
 class TestLoggerApi(unittest.TestCase):
@@ -120,7 +120,7 @@ class TestLoggerApi(unittest.TestCase):
             Returned object is LoggerApi.
         """
         logger = LoggerApi("my_logger")
-        from observe_core.logger_api import get_logger
+        from observe_core.logger import get_logger
 
         l = get_logger("another_logger")
         self.assertIsInstance(l, LoggerApi)

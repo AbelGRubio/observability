@@ -2,8 +2,8 @@
 
 This document is the **behavioral mandate** for AI agents and developers working on the Observe_me repository. It defines the canonical workflows, architecture rules, quality gates, and hard constraints.
 
-**CRITICAL**: Before making any code change, you MUST also read 
-'file://docs/conventions.md' — it contains the tech stack, code conventions, 
+**CRITICAL**: Before making any code change, you MUST also read
+'file://docs/conventions.md' — it contains the tech stack, code conventions,
 and structural reference that all agents are required to follow.
 
 ---

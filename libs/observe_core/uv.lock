@@ -936,7 +936,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/ee/97ee0b973d072702e
 
 [[package]]
 name = "observe-core"
-version = "0.1.0"
+version = "0.1.1rc1"
 source = { virtual = "." }
 dependencies = [
     { name = "aws-opentelemetry-distro" },

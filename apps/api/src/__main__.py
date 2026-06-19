@@ -4,7 +4,7 @@ import logging
 
 import uvicorn
 from observe_api import configure_app, define_app, get_app_settings
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 
 logger = get_logger(__name__)
 

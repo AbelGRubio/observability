@@ -1,7 +1,6 @@
-import os
-from observe_mcp.configure_app import get_mcp
 from pathlib import Path
 
+from observe_mcp.configure_app import get_mcp
 
 my_mcp_server = get_mcp()
 

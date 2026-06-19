@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 from opentelemetry import trace
 
 from observe_api.config import __version__

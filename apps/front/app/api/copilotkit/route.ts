@@ -39,6 +39,6 @@ export const POST = async (req: NextRequest) => {
     serviceAdapter,
     endpoint: "/api/copilotkit",
   });
-
+  console.log("Received request at /api/copilotkit");
   return handleRequest(req);
 };

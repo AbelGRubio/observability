@@ -3,7 +3,7 @@
 import logging
 
 import uvicorn
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 from observe_mcp.configure_app import get_asgi_app, load_prompts, load_resources, load_tools
 
 logger = get_logger(__name__)

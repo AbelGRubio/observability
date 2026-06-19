@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
-from observe_core.logger_api import get_logger
+from observe_core.logger import get_logger
 
 logger = get_logger(__name__)
 
