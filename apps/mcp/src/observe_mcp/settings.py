@@ -24,13 +24,19 @@ class AppSettings(BaseSettings):
     )
 
     local_dev: bool = Field(
-        default=False, alias="LOCAL_DEV", description="Enable local development mode (disables some production guards)"
+        default=False,
+        alias="LOCAL_DEV",
+        description="Enable local development mode (disables some production guards)",
     )
     app_env: str = Field(
-        default="local", alias="APP_ENV", description="Deployment environment (e.g., local, local-aws, dev, prod)"
+        default="local",
+        alias="APP_ENV",
+        description="Deployment environment (e.g., local, local-aws, dev, prod)",
     )
     log_level: str = Field(
-        default="INFO", alias="LOG_LEVEL", description="Logging level (e.g., DEBUG, INFO, WARNING, ERROR)"
+        default="INFO",
+        alias="LOG_LEVEL",
+        description="Logging level (e.g., DEBUG, INFO, WARNING, ERROR)",
     )
 
 

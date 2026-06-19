@@ -58,4 +58,6 @@ class TestAppSettings(unittest.TestCase):
         """
         test_value = "http://localhost,http://example.com"
         settings = AppSettings(cors_origins_=test_value)
-        self.assertEqual(settings.cors_origins, ["http://localhost", "http://example.com"])
+        self.assertEqual(
+            settings.cors_origins, ["http://localhost", "http://example.com"]
+        )

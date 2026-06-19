@@ -33,7 +33,9 @@ def define_app(add_auth: bool = False) -> FastAPI:
         A configured FastAPI application.
 
     """
-    app = FastAPI(title="Observer Controller", summary="Observer controller", version=__version__)
+    app = FastAPI(
+        title="Observer Controller", summary="Observer controller", version=__version__
+    )
 
     app.include_router(router=api_router, tags=["Router 1: API endpoints"])
 

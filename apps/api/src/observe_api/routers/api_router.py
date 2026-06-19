@@ -19,11 +19,15 @@ def health() -> JSONResponse:
     status_code = 200
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("obtain version") as span:
-        span.add_event("obtain version from module package", {"package": observe_api.__name__})
+        span.add_event(
+            "obtain version from module package", {"package": observe_api.__name__}
+        )
 
         logger.info("Inside obtain version")
         logger.debug("Inside obtain version")
 
-        span.add_event("Version obtained", {"version": f"{__version__}", "result": "ok"})
+        span.add_event(
+            "Version obtained", {"version": f"{__version__}", "result": "ok"}
+        )
     logger.info("Getting version")
     return JSONResponse(content={"version": __version__}, status_code=status_code)

@@ -26,7 +26,9 @@ class TestFastAPIApp(unittest.TestCase):
 
     def test_routers_included(self) -> None:
         """Check that routers are included."""
-        router_names = [r.tags[0] for r in self.app.router.routes if getattr(r, "tags", None)]
+        router_names = [
+            r.tags[0] for r in self.app.router.routes if getattr(r, "tags", None)
+        ]
         self.assertIn("Router 1: API endpoints", router_names)
         self.assertIn("Router 2: Endpoints", router_names)
 
@@ -50,6 +52,8 @@ class TestFastAPIApp(unittest.TestCase):
         from fastapi.testclient import TestClient
 
         with TestClient(app) as client:
-            response = client.get("/")  # root endpoint may not exist, but lifecycle runs
+            response = client.get(
+                "/"
+            )  # root endpoint may not exist, but lifecycle runs
             # Should return 404 because root is not defined
             self.assertIn(response.status_code, [404, 200])

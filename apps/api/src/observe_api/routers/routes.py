@@ -22,6 +22,10 @@ def route(name: str) -> JSONResponse:
         # Placeholder business logic.
         user_id = 123
 
-        span.add_event("User processed", {"user.id": f"{name}:{user_id}", "result": "ok"})
+        span.add_event(
+            "User processed", {"user.id": f"{name}:{user_id}", "result": "ok"}
+        )
     logger.info("Doing things here")
-    return JSONResponse(content={f"{name}, the version is": __version__}, status_code=status_code)
+    return JSONResponse(
+        content={f"{name}, the version is": __version__}, status_code=status_code
+    )
