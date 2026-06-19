@@ -65,8 +65,10 @@ class SessionMiddleware:
         if session_id is None and self.local_dev:
             session_id: str = str(uuid4())
 
-        _context = ObserveContext(actor_id=headers.actor_id, rho_trace_id=headers.rho_trace_id, session_id=session_id)
-        set_context(context=_context)
+        context_value_ = ObserveContext(
+            actor_id=headers.actor_id, rho_trace_id=headers.rho_trace_id, session_id=session_id
+        )
+        set_context(context=context_value_)
 
         # Attach session ID to OTEL baggage (propagates across services)
         ctx = otel_baggage.set_baggage("session.id", session_id)
@@ -79,7 +81,7 @@ class SessionMiddleware:
 
         try:
             if connection_type == "http":
-                await self._handle_http(scope, receive, send, _context)
+                await self._handle_http(scope, receive, send, context_value_)
             else:
                 # WebSocket: no response object to attach headers to,
                 # context is propagated via OTEL baggage only
