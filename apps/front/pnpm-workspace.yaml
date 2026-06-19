@@ -1,0 +1,9 @@
+overrides:
+  shiki: 3.23.0
+  zod: ^3.23.8
+  '@langchain/core': ^1.1.36
+
+allowBuilds:
+  '@scarf/scarf': true
+  sharp: true
+  unrs-resolver: true
