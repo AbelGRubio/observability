@@ -1154,6 +1154,8 @@ dependencies = [
     { name = "fastmcp" },
     { name = "httpx" },
     { name = "observe-core" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
 ]
 
 [package.dev-dependencies]
@@ -1179,6 +1181,8 @@ requires-dist = [
     { name = "fastmcp", specifier = ">=3.1.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "observe-core", directory = "../../libs/observe_core" },
+    { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pydantic-settings", specifier = ">=2.12.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1271,7 +1275,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/ee/97ee0b973d072702e
 
 [[package]]
 name = "observe-core"
-version = "0.1.1"
+version = "0.1.2"
 source = { directory = "../../libs/observe_core" }
 dependencies = [
     { name = "aws-opentelemetry-distro" },
