@@ -36,3 +36,16 @@ test: ## Run all tests
 	@echo "$(ARROW) Running tests..."
 	@uv run pytest -v --tb=short --disable-warnings --maxfail=1 || { echo "$(FAIL) Tests failed"; exit 1; }
 	@echo "$(OK) All tests passed"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Quality Assurance & Checks
+# ─────────────────────────────────────────────────────────────────────────────
+
+.PHONY: ci
+ci: check test   ## Run full QA pipeline
+	@echo "✨ QA pipeline completed successfully"
+
+.PHONY: check
+check: ## Run pre-commit checks
+	@echo "$(ARROW) Running pre-commit checks..."
+	@uv run pre-commit run --all-files --hook-stage commit

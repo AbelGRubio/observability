@@ -27,16 +27,41 @@ repos:
         args: ["--fix"]
       - id: ruff-format
 
-  - repo: https://github.com/facebook/pyrefly-pre-commit
-    rev: 0.47.0
-    hooks:
-      - id: pyrefly-check
-        name: Pyrefly (type checking)
-        pass_filenames: false
-        language: system
+  # - repo: https://github.com/facebook/pyrefly-pre-commit
+  #   rev: 0.47.0
+  #   hooks:
+  #     - id: pyrefly-check
+  #       name: Pyrefly (type checking)
+  #       pass_filenames: false
+  #       language: system
+  #       files: ^apps/agent/
 
   - repo: https://github.com/checkmake/checkmake.git
     rev: v0.3.0
     hooks:
       - id: checkmake
         args: ["--config=.checkmake.ini"]
+
+  # 3. Pyrefly: Un hook específico por proyecto
+  - repo: local
+    hooks:
+      - id: pyrefly-agent
+        name: Pyrefly (Agent)
+        entry: pyrefly check --config apps/agent/pyproject.toml
+        language: system
+        pass_filenames: false
+        files: ^apps/agent/
+
+      - id: pyrefly-mcp
+        name: Pyrefly (MCP)
+        entry: pyrefly check --config apps/mcp/pyproject.toml
+        language: system
+        pass_filenames: false
+        files: ^apps/mcp/
+
+      - id: pyrefly-api
+        name: Pyrefly (API)
+        entry: pyrefly check --config apps/api/pyproject.toml
+        language: system
+        pass_filenames: false
+        files: ^apps/api/
