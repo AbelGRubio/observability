@@ -177,11 +177,16 @@ services:
         - "5000:4000"
       volumes:
         - ./litellm.yaml:/app/config.yaml:ro
+      command: ["--config", "/app/config.yaml", "--port", "4000"]
       env_file:
         - ../.env
       environment:
         - OTEL_ENDPOINT=http://otel-collector:4317
-        - OTEL_SERVICE_NAME=litellm
+        - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+        - OTEL_SERVICE_NAME=litellm-proxy
+        - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+        - OTEL_TRACES_EXPORTER=otlp
+        - OTEL_LOGS_EXPORTER=otlp
         - DATABASE_URL=postgresql://litellm:3s9549RSFAiN@db-litellm:5432/litellm
       depends_on:
         - otel-collector

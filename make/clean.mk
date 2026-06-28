@@ -18,3 +18,8 @@ clean-dry-run: ## Show files and directories that would be deleted
 	@echo "Files / directories that would be deleted:"
 	@find . -type d \( $(foreach d,$(CLEAN_DIRS),-name "$(d)" -o ) -false \) -print
 	@find . -type f \( $(foreach f,$(CLEAN_FILES),-name "$(f)" -o ) -false \) -print
+
+clean-logs:
+	@echo "Buscando y eliminando carpetas .logs..."
+	@find . -type d -name ".logs" -exec sh -c 'echo "Borrando: {}"; rm -rf "{}"' \;
+	@echo "Limpieza completada."

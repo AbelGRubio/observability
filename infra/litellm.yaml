@@ -8,6 +8,6 @@ general_settings:
   master_key: "sk-1234"
   otel: true # Habilita la exportación a OTEL
 
-environment_variables:
-  OTEL_ENDPOINT: "http://host.docker.internal:4317" # Ajusta si el colector está en otro contenedor
-  OTEL_SERVICE_NAME: "litellm-proxy"
+litellm_settings:
+  callbacks: ["otel"]
+  service_callbacks: ["prometheus"]
