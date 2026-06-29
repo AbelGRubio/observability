@@ -58,7 +58,7 @@ class MCPManager:
     def _get_hash(self, mcp_config: dict[str, Any]) -> str:
         """Generate a stable hash for the given MCP configuration mapping."""
         config_str = json.dumps(mcp_config, sort_keys=True)
-        return hashlib.md5(config_str.encode()).hexdigest()
+        return hashlib.md5(config_str.encode()).hexdigest()  # noqa: S324
 
     async def get_session(self, client: MultiServerMCPClient, name: str) -> ClientSession:
         """Return an active `ClientSession` for `name`, creating it if missing.
@@ -91,13 +91,13 @@ class MCPManager:
         logged, but the manager proceeds to clear its internal state.
         """
         async with self.lock:
-            for session in list(self.sessions.values()):
+            for session in self.sessions.values():
                 try:
                     await session.__aexit__(None, None, None)
                 except Exception:
                     # Best-effort: attempt `.close()` if available.
                     try:
-                        maybe = session.close()
+                        maybe = session.close()  # type: ignore[missing-attribute]
                         if asyncio.iscoroutine(maybe):
                             await maybe
                     except Exception:

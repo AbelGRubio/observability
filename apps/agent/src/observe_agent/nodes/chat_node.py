@@ -16,10 +16,13 @@ from contextlib import AsyncExitStack
 
 from copilotkit.langgraph import copilotkit_exit
 from langchain.agents import create_agent
+from langchain_core.messages import SystemMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.tools import load_mcp_tools
 from langchain_openai import ChatOpenAI
+
+# from langchain_openai import ChatOpenAI
 from langgraph.graph import END
 from langgraph.types import Command
 from observe_core.logger import get_logger
@@ -62,7 +65,7 @@ async def agent_node(state: AgentState, config: RunnableConfig) -> Command:
     mcp_config: MCPConfig = copy.deepcopy(state.get("mcp_config") or default_mcp_config)
 
     # Multi-server MCP client will manage sessions to one or more MCP servers
-    mcp_client = MultiServerMCPClient(mcp_config)
+    mcp_client = MultiServerMCPClient(mcp_config)  # type: ignore[bad-argument-type]
     mcp_tools = []
 
     # Use an AsyncExitStack so all MCP sessions are closed on exit
@@ -75,7 +78,11 @@ async def agent_node(state: AgentState, config: RunnableConfig) -> Command:
             mcp_tools.extend(server_tools)
 
         # Instantiate the LLM client with the configured model and API key
-        model = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key.get_secret_value())
+        model = ChatOpenAI(
+            model="gpt-4o",
+            api_key=settings.openai_api_key.get_secret_value(),
+            base_url=settings.model_base_url,
+        )
         # Inject RAG (retrieval) context into the system prompt if present.
         # NOTE: integration into the actual message list may be required upstream.
         # system_prompt = f"Contexto disponible: {state.get('rag_context')}"
@@ -87,8 +94,27 @@ async def agent_node(state: AgentState, config: RunnableConfig) -> Command:
         react_agent = create_agent(model, mcp_tools)
 
         try:
+            rag_context = state.get("rag_context", [])
+
+            # 2. Prepare the augmented messages list
+            # We create a new list so we don't mutate the original state["messages"] permanently
+            messages = list(state["messages"])
+
+            if rag_context:
+                # Join documents into a clean string
+                context_text = "\n\n".join(rag_context)
+
+                # Create the context message
+                context_message = SystemMessage(
+                    content=f"Utiliza el siguiente contexto proporcionado para responder a la"
+                    f" pregunta del usuario:\n\n{context_text}"
+                )
+
+                # Prepend it to the list (or insert it after the very first system prompt if you have one)
+                messages.insert(0, context_message)
+
             # Invoke the agent asynchronously with the current conversation messages
-            agent_response = await react_agent.ainvoke({"messages": state["messages"]})
+            agent_response = await react_agent.ainvoke({"messages": messages})
             # Merge incoming messages from the agent with the existing conversation
             updated_messages = state["messages"] + agent_response.get("messages", [])
 

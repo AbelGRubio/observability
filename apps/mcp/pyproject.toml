@@ -4,8 +4,14 @@ version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
   "observe-core",
+  "pydantic>=2.10.6",
+  "pydantic-settings>=2.12.0",
   "fastmcp>=3.1.0",
   "httpx>=0.28.1",
+  "pandas>=3.0.3",
+  "numpy>=2.5.0",
+  "scipy>=1.18.0",
+  "matplotlib>=3.11.0",
 ]
 
 [tool.uv.sources]
