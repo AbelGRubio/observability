@@ -1,11 +1,15 @@
 [project]
-name = "observe_fa"
+name = "observe_api"
 version = "0.1.0"
+requires-python = ">=3.13"
 dependencies = [
   "observe-core",
   "uvicorn>=0.34.0",
   "fastapi>=0.115.12",
+  "boto3>=1.43.38",
+  "python-multipart>=0.0.32",
 ]
+
 
 [tool.uv.sources]
 observe-core = { path = "../../libs/observe_core", editable = false }
