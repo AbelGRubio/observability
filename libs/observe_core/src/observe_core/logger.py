@@ -98,9 +98,11 @@ class LoggerApi(logging.Logger):
         if len(root.handlers) > 0:
             return
 
-        json_logs = os.getenv("JSON_LOGS", "true") == "true"
+        json_logs = os.getenv("JSON_LOGS", "false") == "true"
 
         if json_logs:
+            console_handler = logging.StreamHandler(sys.stderr)
+        else:
             # Rich console handler.
             console_handler = RichHandler(
                 console=self.console,
@@ -111,15 +113,13 @@ class LoggerApi(logging.Logger):
                 show_path=False,
                 markup=True,
             )
-        else:
-            console_handler = logging.StreamHandler(sys.stderr)
 
         console_handler.setLevel(logging.DEBUG)
 
         if json_logs:
-            formatter = logging.Formatter("%(name)s\t%(threadName)s\t%(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-        else:
             formatter = JsonFormatter()
+        else:
+            formatter = logging.Formatter("%(name)s\t%(threadName)s\t%(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
         console_handler.setFormatter(formatter)
         root.addHandler(console_handler)
