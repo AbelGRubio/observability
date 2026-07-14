@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
         s3_client.head_bucket(Bucket=BUCKET_NAME)
         logger.info(f"El bucket '{BUCKET_NAME}' existe.")
 
-    except ClientError
+    except ClientError:
         logger.info(f"El bucket '{BUCKET_NAME}' no existe. Creando...")
         s3_client.create_bucket(Bucket=BUCKET_NAME)
 
