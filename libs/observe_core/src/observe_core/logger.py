@@ -12,11 +12,22 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import orjson
-from rich.console import Console
-from rich.default_styles import DEFAULT_STYLES
-from rich.logging import RichHandler
-from rich.table import Table
-from rich.theme import Theme
+
+try:
+    from rich.console import Console
+    from rich.default_styles import DEFAULT_STYLES
+    from rich.logging import RichHandler
+    from rich.table import Table
+    from rich.theme import Theme
+    HAS_RICH = True
+except ImportError:
+    HAS_RICH = False
+    # Definimos tipos dummy o None para que el código no falle si se usan de forma estática
+    Console = Any
+    RichHandler = Any
+    Table = Any
+    Theme = Any
+
 
 detail_level = logging.DEBUG + 5
 
@@ -35,6 +46,19 @@ class JsonFormatter(logging.Formatter):
         log_data["timestamp"] = int(datetime.fromtimestamp(record.created, tz=UTC).timestamp() * 1e6)
 
         return orjson.dumps(log_data, option=orjson.OPT_NON_STR_KEYS, default=default_handler).decode("utf-8")
+
+
+class DictNormalizerFilter(logging.Filter):
+    """Convierte diccionarios de logs (como los de structlog/LangGraph) en strings bonitos."""
+    def filter(self, record: logging.LogRecord) -> bool:
+        # print("entra aqui")
+        if isinstance(record.msg, dict):
+            # Extraemos lo importante del dict para que sea legible en consola
+            event = record.msg.get("event", "")
+            # Convertimos el resto del dict en una cadena limpia
+            details = {k: v for k, v in record.msg.items() if k != "event"}
+            record.msg = f"{event} | {details}"
+        return True
 
 
 class LoggerApi(logging.Logger):
@@ -63,15 +87,18 @@ class LoggerApi(logging.Logger):
         self.start_global_logger()
 
     @property
-    def console(self) -> Console:
+    def console(self) -> Console | None:
         """Instance and get the console."""
         if LoggerApi._console is None:
             LoggerApi._console = self.start_console()
         return LoggerApi._console
 
     @staticmethod
-    def start_console() -> Console:
+    def start_console() -> Console | None:
         """Start console."""
+        if not HAS_RICH:
+            return None
+
         custom_theme = Theme({
             **DEFAULT_STYLES,
             "logging.level.detail": "magenta",
@@ -100,7 +127,7 @@ class LoggerApi(logging.Logger):
 
         json_logs = os.getenv("JSON_LOGS", "false") == "true"
 
-        if json_logs:
+        if json_logs or not HAS_RICH:
             console_handler = logging.StreamHandler(sys.stderr)
         else:
             # Rich console handler.
@@ -115,11 +142,15 @@ class LoggerApi(logging.Logger):
             )
 
         console_handler.setLevel(logging.DEBUG)
+        console_handler.addFilter(DictNormalizerFilter())
 
         if json_logs:
             formatter = JsonFormatter()
         else:
-            formatter = logging.Formatter("%(name)s\t%(threadName)s\t%(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+            base_format = "%(name)s\t%(threadName)s\t%(message)s"
+            _format = f"%(asctime)s\t{base_format}" if not HAS_RICH else base_format
+
+            formatter = logging.Formatter(_format, datefmt="[%Y-%m-%d %H:%M:%S]")
 
         console_handler.setFormatter(formatter)
         root.addHandler(console_handler)
@@ -130,7 +161,7 @@ class LoggerApi(logging.Logger):
         file_handler.setFormatter(
             logging.Formatter(
                 "%(asctime)s\t%(levelname)s\t%(name)s\t%(threadName)s\t%(message)s",
-                "%Y-%m-%d %H:%M:%S",
+                "[%Y-%m-%d %H:%M:%S]",
             )
         )
         root.addHandler(file_handler)
