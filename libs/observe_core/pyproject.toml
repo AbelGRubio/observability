@@ -1,6 +1,6 @@
 [project]
 name = "observe-core"
-version = "0.1.2"
+version = "0.1.3-rc.1"
 license = { text = "MIT" }
 requires-python = ">=3.13"
 dependencies = [
