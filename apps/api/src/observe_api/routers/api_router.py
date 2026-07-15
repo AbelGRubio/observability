@@ -23,7 +23,6 @@ def health() -> JSONResponse:
             "obtain version from module package", {"package": observe_api.__name__}
         )
 
-        logger.info("Inside obtain version")
         logger.debug("Inside obtain version")
 
         span.add_event(
