@@ -70,6 +70,8 @@ services:
     env_file:
       - ../.env
     privileged: true
+    volumes:
+      - ~/.aws:/root/.aws:ro
     environment:
       - OTEL_SERVICE_NAME=observe_api
 
