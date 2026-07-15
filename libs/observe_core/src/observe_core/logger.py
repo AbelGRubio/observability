@@ -292,11 +292,9 @@ def propague_loggers(no_propagate_prefixes=None):
 
         # Comprobar si el logger empieza por alguno de los prefijos
         if any(n.startswith(prefix) for prefix in no_propagate_prefixes):
-            print("No propagate logger:", n)
             _logger.handlers = []
             _logger.propagate = False
         else:
-            print("propagate logger:", n)
             _logger.handlers = []
             _logger.propagate = True
             _logger.setLevel(logging.DEBUG)
