@@ -48,6 +48,12 @@ class JsonFormatter(logging.Formatter):
         return orjson.dumps(log_data, option=orjson.OPT_NON_STR_KEYS, default=default_handler).decode("utf-8")
 
 
+class UvicornFilter(logging.Filter):
+    def filter(self, record):
+        # Filtra específicamente el nombre del logger
+        return not record.name.startswith("uvicorn.access")
+
+
 class DictNormalizerFilter(logging.Filter):
     """Convierte diccionarios de logs (como los de structlog/LangGraph) en strings bonitos."""
     def filter(self, record: logging.LogRecord) -> bool:
@@ -143,6 +149,7 @@ class LoggerApi(logging.Logger):
 
         console_handler.setLevel(logging.DEBUG)
         console_handler.addFilter(DictNormalizerFilter())
+        console_handler.addFilter(UvicornFilter())
 
         if json_logs:
             formatter = JsonFormatter()
@@ -265,3 +272,31 @@ logging.setLoggerClass(LoggerApi)
 def get_logger(name: str) -> LoggerApi:
     """Create and return a configured `LoggerApi` instance."""
     return logging.getLogger(name)
+
+
+def propague_loggers(no_propagate_prefixes=None):
+    """
+    Configura loggers:
+    - Por defecto, propagan y nivel DEBUG.
+    - Si el nombre empieza con un prefijo de la lista, se desactiva la propagación.
+    """
+    # Valores por defecto si la lista es None
+    if no_propagate_prefixes is None:
+        no_propagate_prefixes = ["boto3", "urllib3", "botocore", "s3transfer", "bcdocs"]
+
+    # Obtenemos todos los loggers conocidos
+    loggers = logging.Logger.manager.loggerDict.keys()
+
+    for n in loggers:
+        _logger = logging.getLogger(n)
+
+        # Comprobar si el logger empieza por alguno de los prefijos
+        if any(n.startswith(prefix) for prefix in no_propagate_prefixes):
+            print("No propagate logger:", n)
+            _logger.handlers = []
+            _logger.propagate = False
+        else:
+            print("propagate logger:", n)
+            _logger.handlers = []
+            _logger.propagate = True
+            _logger.setLevel(logging.DEBUG)
