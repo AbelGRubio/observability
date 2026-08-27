@@ -17,7 +17,8 @@ async def lifespan(app: FastAPI):
     s3_client = get_s3_client()
     tags_deseadas = {
         'Environment': 'Development',
-        'Project': 'MiniStack-Test'}
+        'Project': 'MiniStack-Test',
+        'Test': 'prueba_test_guardado',}
 
     try:
         # 1. ¿Existe el bucket?

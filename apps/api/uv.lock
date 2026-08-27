@@ -1005,7 +1005,7 @@ dev = [
 requires-dist = [
     { name = "boto3", specifier = ">=1.43.38" },
     { name = "fastapi", specifier = ">=0.115.12" },
-    { name = "observe-core", editable = "../../libs/observe_core" },
+    { name = "observe-core", directory = "../../libs/observe_core" },
     { name = "python-multipart", specifier = ">=0.0.32" },
     { name = "uvicorn", specifier = ">=0.34.0" },
 ]
@@ -1031,7 +1031,7 @@ dev = [
 [[package]]
 name = "observe-core"
 version = "0.1.3rc1"
-source = { editable = "../../libs/observe_core" }
+source = { directory = "../../libs/observe_core" }
 dependencies = [
     { name = "aws-opentelemetry-distro" },
     { name = "fastapi" },
