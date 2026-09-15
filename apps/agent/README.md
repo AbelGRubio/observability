@@ -1,6 +1,6 @@
 # Agent Service
 
-Python service that runs the conversational agent layer for the monorepo.
+Python service that runs the conversational agent layer for the monorepo.   
 
 ## Purpose
 
