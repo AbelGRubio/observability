@@ -26,7 +26,7 @@ export function MCPConfigForm() {
     STORAGE_KEY,
     {  "observe_mcp": {
     "logType": "none",
-    "url": "http://observe_mcp:8000/mcp",
+    "url": "http://localhost:8000/mcp",
     "transport": "http"
   }}
   );
