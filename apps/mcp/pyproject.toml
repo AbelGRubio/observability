@@ -12,11 +12,22 @@ dependencies = [
   "numpy>=2.5.0",
   "scipy>=1.18.0",
   "matplotlib>=3.11.0",
+    "httpx2==2.16.0"
+]
+
+
+[project.optional-dependencies]
+observe_core = [
+    "observe-core",
 ]
 
 [tool.uv.sources]
-observe-core = { path = "../../libs/observe_core", editable = false }
+observe-core = { workspace = true }
 
+[tool.uv.workspace]
+members = [
+    "../../libs/observe_core",
+]
 
 [dependency-groups]
 dev = [

@@ -155,4 +155,3 @@ search-path = [
 python-platform = "win32"
 python-version = "3.14"
 python-interpreter-path = ".venv/Scripts/python.exe"
-

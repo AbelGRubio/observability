@@ -10,15 +10,18 @@ logger = get_logger(__name__)
 
 BUCKET_NAME = "my-bucket"
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """lifespan. """
     # --- LOGIC STARTUP ---
     logger.info("Iniciando verificación de infraestructura en MiniStack...")
     s3_client = get_s3_client()
     tags_deseadas = {
-        'Environment': 'Development',
-        'Project': 'MiniStack-Test',
-        'Test': 'prueba_test_guardado',}
+        "Environment": "Development",
+        "Project": "MiniStack-Test",
+        "Test": "prueba_test_guardado",
+    }
 
     try:
         # 1. ¿Existe el bucket?
@@ -30,11 +33,7 @@ async def lifespan(app: FastAPI):
         s3_client.create_bucket(Bucket=BUCKET_NAME)
 
     for key, content in tags_deseadas.items():
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=key,
-            Body=content.encode('utf-8')
-        )
+        s3_client.put_object(Bucket=BUCKET_NAME, Key=key, Body=content.encode("utf-8"))
         logger.info(f"Update variable {key}")
 
     yield

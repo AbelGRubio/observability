@@ -1,4 +1,4 @@
-# """Retriever module for indexing and querying documents using InMemoryVectorStore."""
+"""Retriever module for indexing and querying documents using InMemoryVectorStore."""
 #
 # from __future__ import annotations
 #
