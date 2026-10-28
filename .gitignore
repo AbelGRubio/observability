@@ -214,3 +214,5 @@ __marimo__/
 /apps/agent/.langgraph_api/
 /apps/agent/others/
 /app.py
+/musica/
+/download_music.py
