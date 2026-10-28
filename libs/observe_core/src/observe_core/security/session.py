@@ -62,7 +62,7 @@ class SessionMiddleware:
 
         # If session_id is missing, generate it only in local environments,
         # where we simulate AWS behavior that normally populates this value
-        if session_id is None and self.local_dev:
+        if session_id is None:
             session_id: str = str(uuid4())
 
         context_value_ = ObserveContext(

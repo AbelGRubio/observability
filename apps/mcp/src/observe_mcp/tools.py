@@ -9,6 +9,7 @@ from observe_mcp.configure_app import get_mcp
 
 my_mcp_server = get_mcp()
 
+API_BASE_URL = os.getenv("API_BASE_URL", "http://observer_api:8000/")
 
 # Farewell detection — used to short-circuit with a goodbye message.
 _FAREWELL_RE = re.compile(
@@ -125,3 +126,95 @@ async def execute_route(name: str) -> str:
         return f"Remote route returned HTTP {e.response.status_code}: {e.response.text}"
     except Exception as e:
         return f"Error contacting remote route: {e}"
+
+
+@my_mcp_server.tool(
+    name="get_secret",
+    description="Recupera el contenido de un archivo específico almacenado en el bucket de S3.\n"
+                "Esta herramienta accede a la clave proporcionada y devuelve el texto decodificado.\n"
+                "Útil cuando necesitas consultar el valor de un secreto o configuración guardada."
+)
+async def get_secret(file_key: str) -> str:
+    """
+    Retrieve a specific secret file content from S3.
+
+    Args:
+        file_key (str): The unique identifier/key of the file in the S3 bucket.
+
+    Returns:
+        str: The content of the secret file or an error message if the operation fails.
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{API_BASE_URL}/get-secret/{file_key}")
+        if response.status_code == 200:
+            return str(response.json())
+        return f"Error {response.status_code}: {response.text}"
+
+@my_mcp_server.tool(
+    name="list_secrets",
+    description="Obtiene un listado completo de todos los nombres de archivo disponibles en el bucket.\n"
+                "Analiza el bucket configurado y extrae la lista de las claves presentes en el sistema.\n"
+                "Ideal para explorar qué secretos están almacenados antes de realizar una consulta."
+)
+async def list_secrets() -> list:
+    """
+    List all available secret keys in the S3 bucket.
+
+    Returns:
+        list: A list of string keys present in the bucket, or an empty list if none found.
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{API_BASE_URL}/list-secrets")
+        if response.status_code == 200:
+            return response.json().get("files", [])
+        return [f"Error: {response.text}"]
+
+@my_mcp_server.tool(
+    name="save_secret",
+    description="Crea o sobrescribe un archivo en S3 utilizando una clave y contenido de texto plano.\n"
+                "Esta herramienta toma el par clave-valor y lo almacena directamente en el bucket.\n"
+                "Se utiliza para persistir configuraciones o credenciales mediante una entrada de texto."
+)
+async def save_secret(key: str, content: str) -> str:
+    """
+    Save or overwrite a secret in S3 with provided content.
+
+    Args:
+        key (str): The destination path or filename in the bucket.
+        content (str): The raw text content to store.
+
+    Returns:
+        str: A confirmation message or an error description.
+    """
+    async with httpx.AsyncClient() as client:
+        payload = {"key": key, "content": content}
+        response = await client.post(f"{API_BASE_URL}/save-secret", json=payload)
+        if response.status_code == 200:
+            return response.json().get("message", "Guardado con éxito")
+        return f"Error: {response.text}"
+
+@my_mcp_server.tool(
+    name="upload_secret",
+    description="Carga un archivo binario o de texto desde el sistema local hacia el bucket de S3.\n"
+                "Permite asignar una clave específica al archivo durante el proceso de transferencia.\n"
+                "Útil para subir configuraciones desde archivos existentes en lugar de escribir texto."
+)
+async def upload_secret(key: str, file_path: str) -> str:
+    """
+    Upload a local file to the S3 bucket.
+
+    Args:
+        key (str): The target key name for the stored file.
+        file_path (str): The absolute or relative path to the file on the local disk.
+
+    Returns:
+        str: A confirmation message upon successful upload or an error string.
+    """
+    async with httpx.AsyncClient() as client:
+        with open(file_path, 'rb') as f:
+            files = {'file': f}
+            params = {'key': key}
+            response = await client.post(f"{API_BASE_URL}/upload-secret", params=params, files=files)
+            if response.status_code == 200:
+                return response.json().get("message", "Subido con éxito")
+            return f"Error: {response.text}"

@@ -3,24 +3,68 @@
 import functools
 import logging
 import os
+import sys
 import time
+from datetime import UTC, datetime
 from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from typing import Any, ClassVar
 
-from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
-from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
-from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-from rich.console import Console
-from rich.default_styles import DEFAULT_STYLES
-from rich.logging import RichHandler
-from rich.table import Table
-from rich.theme import Theme
+import orjson
+
+try:
+    from rich.console import Console
+    from rich.default_styles import DEFAULT_STYLES
+    from rich.logging import RichHandler
+    from rich.table import Table
+    from rich.theme import Theme
+    HAS_RICH = True
+except ImportError:
+    HAS_RICH = False
+    # Definimos tipos dummy o None para que el código no falle si se usan de forma estática
+    Console = Any
+    RichHandler = Any
+    Table = Any
+    Theme = Any
+
 
 detail_level = logging.DEBUG + 5
 
 logging.addLevelName(detail_level, "DETAIL")
+
+
+def default_handler(obj: Any) -> str:
+    """Default handler for logging."""
+    return f"<<Non-serializable object {type(obj).__name__}>>"
+
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        """Format a log record as JSON."""
+        log_data = record.__dict__
+        log_data["timestamp"] = int(datetime.fromtimestamp(record.created, tz=UTC).timestamp() * 1e6)
+
+        return orjson.dumps(log_data, option=orjson.OPT_NON_STR_KEYS, default=default_handler).decode("utf-8")
+
+
+class UvicornFilter(logging.Filter):
+    def filter(self, record):
+        # Filtra específicamente el nombre del logger
+        return not record.name.startswith("uvicorn.access")
+
+
+class DictNormalizerFilter(logging.Filter):
+    """Convierte diccionarios de logs (como los de structlog/LangGraph) en strings bonitos."""
+    def filter(self, record: logging.LogRecord) -> bool:
+        # print("entra aqui")
+        if isinstance(record.msg, dict):
+            # Extraemos lo importante del dict para que sea legible en consola
+            event = record.msg.get("event", "")
+            # Convertimos el resto del dict en una cadena limpia
+            details = {k: v for k, v in record.msg.items() if k != "event"}
+            record.msg = f"{event} | {details}"
+        return True
 
 
 class LoggerApi(logging.Logger):
@@ -28,13 +72,14 @@ class LoggerApi(logging.Logger):
 
     _timers: ClassVar[dict[str, float]] = {}
     _timers_it: ClassVar[dict[str, float]] = {}
+    _console: ClassVar[Console | None] = None
 
-    def __init__(self, name: str | None = None) -> None:
+    def __init__(self, name: str | None = None, level: int = logging.NOTSET) -> None:
         """Initialize logger handlers and logging metadata."""
         if not name:
             name = "api"
 
-        super().__init__(name)
+        super().__init__(name, level)
 
         self._titles_level = {
             DEBUG: f"DEBUG {name.upper()}",
@@ -44,27 +89,22 @@ class LoggerApi(logging.Logger):
             detail_level: f"DETAIL {name.upper()}",
             CRITICAL: f"CRITICAL {name.upper()}",
         }
-        self.otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", None)
         self.propagate = True
-        self.console: Console | None = None
-        self.start_logger()
+        self.start_global_logger()
 
-    def add_open_telemetry(self) -> None:
-        """Attach an OpenTelemetry log handler when an endpoint is configured."""
-        logger_provider = LoggerProvider()
+    @property
+    def console(self) -> Console | None:
+        """Instance and get the console."""
+        if LoggerApi._console is None:
+            LoggerApi._console = self.start_console()
+        return LoggerApi._console
 
-        exporter = OTLPLogExporter(
-            endpoint=self.otel_endpoint,  # o tu endpoint
-            insecure=True,
-        )
+    @staticmethod
+    def start_console() -> Console | None:
+        """Start console."""
+        if not HAS_RICH:
+            return None
 
-        logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
-
-        handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
-        self.addHandler(handler)
-
-    def start_logger(self) -> None:
-        """Configure console and file logging handlers."""
         custom_theme = Theme({
             **DEFAULT_STYLES,
             "logging.level.detail": "magenta",
@@ -75,7 +115,7 @@ class LoggerApi(logging.Logger):
             "logging.level.critical": "bold white on red",
         })
 
-        self.console = Console(
+        return Console(
             theme=custom_theme,
             soft_wrap=True,
             stderr=False,
@@ -84,23 +124,43 @@ class LoggerApi(logging.Logger):
             width=200,
         )
 
-        # Rich console handler.
-        console_handler = RichHandler(
-            console=self.console,
-            omit_repeated_times=True,
-            rich_tracebacks=True,
-            show_time=True,
-            show_level=True,
-            show_path=False,
-            markup=True,
-        )
+    def start_global_logger(self) -> None:
+        """Configure console and file logging handlers."""
+        root = logging.getLogger()
+
+        if len(root.handlers) > 0:
+            return
+
+        json_logs = os.getenv("JSON_LOGS", "false") == "true"
+
+        if json_logs or not HAS_RICH:
+            console_handler = logging.StreamHandler(sys.stderr)
+        else:
+            # Rich console handler.
+            console_handler = RichHandler(
+                console=self.console,
+                omit_repeated_times=True,
+                rich_tracebacks=True,
+                show_time=True,
+                show_level=True,
+                show_path=False,
+                markup=True,
+            )
 
         console_handler.setLevel(logging.DEBUG)
-        console_handler.setFormatter(
-            logging.Formatter("%(name)s\t%(threadName)s\t%(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-        )
-        self.addHandler(console_handler)
+        console_handler.addFilter(DictNormalizerFilter())
+        console_handler.addFilter(UvicornFilter())
 
+        if json_logs:
+            formatter = JsonFormatter()
+        else:
+            base_format = "%(name)s\t%(threadName)s\t%(message)s"
+            _format = f"%(asctime)s\t{base_format}" if not HAS_RICH else base_format
+
+            formatter = logging.Formatter(_format, datefmt="[%Y-%m-%d %H:%M:%S]")
+
+        console_handler.setFormatter(formatter)
+        root.addHandler(console_handler)
         # Rotating file handler.
         Path(".logs").mkdir(exist_ok=True)
         file_handler = TimedRotatingFileHandler(".logs/app.log", when="midnight", interval=1, backupCount=7)
@@ -108,13 +168,11 @@ class LoggerApi(logging.Logger):
         file_handler.setFormatter(
             logging.Formatter(
                 "%(asctime)s\t%(levelname)s\t%(name)s\t%(threadName)s\t%(message)s",
-                "%Y-%m-%d %H:%M:%S",
+                "[%Y-%m-%d %H:%M:%S]",
             )
         )
-        self.addHandler(file_handler)
-
-        if self.otel_endpoint:
-            self.add_open_telemetry()
+        root.addHandler(file_handler)
+        root.setLevel(0)
 
     def _get_title(self, level: int) -> str:
         """Return the display title associated with a log level."""
@@ -208,6 +266,35 @@ class LoggerApi(logging.Logger):
         self.info("Timers: " + ", ".join(f"{k}={v:.4f}s" for k, v in self._timers_it.items()))
 
 
+logging.setLoggerClass(LoggerApi)
+
+
 def get_logger(name: str) -> LoggerApi:
     """Create and return a configured `LoggerApi` instance."""
-    return LoggerApi(name)
+    return logging.getLogger(name)
+
+
+def propague_loggers(no_propagate_prefixes=None):
+    """
+    Configura loggers:
+    - Por defecto, propagan y nivel DEBUG.
+    - Si el nombre empieza con un prefijo de la lista, se desactiva la propagación.
+    """
+    # Valores por defecto si la lista es None
+    if no_propagate_prefixes is None:
+        no_propagate_prefixes = ["boto3", "urllib3", "botocore", "s3transfer", "bcdocs"]
+
+    # Obtenemos todos los loggers conocidos
+    loggers = logging.Logger.manager.loggerDict.keys()
+
+    for n in loggers:
+        _logger = logging.getLogger(n)
+
+        # Comprobar si el logger empieza por alguno de los prefijos
+        if any(n.startswith(prefix) for prefix in no_propagate_prefixes):
+            _logger.handlers = []
+            _logger.propagate = False
+        else:
+            _logger.handlers = []
+            _logger.propagate = True
+            _logger.setLevel(logging.DEBUG)

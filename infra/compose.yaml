@@ -19,12 +19,12 @@ services:
 
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_PROPAGATORS=tracecontext,baggage
 
       # Logs Python
       - OTEL_PYTHON_LOG_CORRELATION=true
       - OTEL_PYTHON_LOG_LEVEL=INFO
       - OTEL_SEMCONV_STABILITY_OPT_IN=http
-
     #      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 
     networks:
@@ -48,6 +48,7 @@ services:
 
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_PROPAGATORS=tracecontext,baggage
 
       # Logs Python
       - OTEL_PYTHON_LOG_CORRELATION=true
@@ -69,6 +70,8 @@ services:
     env_file:
       - ../.env
     privileged: true
+    volumes:
+      - ~/.aws:/root/.aws:ro
     environment:
       - OTEL_SERVICE_NAME=observe_api
 
@@ -78,6 +81,7 @@ services:
 
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_PROPAGATORS=tracecontext,baggage
 
       # Logs Python
       - OTEL_PYTHON_LOG_CORRELATION=true
@@ -187,6 +191,7 @@ services:
         - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
         - OTEL_TRACES_EXPORTER=otlp
         - OTEL_LOGS_EXPORTER=otlp
+        - OTEL_PROPAGATORS=tracecontext,baggage
         - DATABASE_URL=postgresql://litellm:3s9549RSFAiN@db-litellm:5432/litellm
       depends_on:
         - otel-collector
@@ -202,6 +207,26 @@ services:
       POSTGRES_DB: litellm
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - observer-network
+
+  ministack:
+    image: ministackorg/ministack:1.3-full
+    ports:
+      - "4566:4566"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    networks:
+      - observer-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
     networks:
       - observer-network
 
