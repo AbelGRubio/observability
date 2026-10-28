@@ -2,62 +2,65 @@ name: Master Pipeline
 
 on:
   push:
-    branches:
-      - master
+    branches: [ main, develop ]
   pull_request:
-    types: [opened, synchronize, reopened]
-
-  workflow_call:
-    secrets:
-      PR_TOKEN_USER:
-        required: false
-
+    branches: [ main, develop ]
+  workflow_dispatch:
 
 jobs:
-  # 1. Ejecuta pre-commit
-  call-pre-commit:
-    uses: ./.github/workflows/pre-commit.yml
+  pre-commit:
+    if: "!contains(github.event.head_commit.message, 'chore(release)')"
+    uses: AbelGRubio/github-actions-templates/.github/workflows/pre-commit.yml@v0.0.1
 
-  # 2. Si pre-commit pasa, ejecuta sonarqube
-#  call-sonarqube:
-#    needs: call-pre-commit
-#    uses: ./.github/workflows/sonarqube.yml
-#    secrets: inherit # Pasa automáticamente los secrets al archivo hijo
+  test:
+    needs: pre-commit
+    uses: AbelGRubio/github-actions-templates/.github/workflows/test.yml@v0.0.1
+    secrets:
+      PR_TOKEN_USER: ${{ secrets.PR_TOKEN_USER }}
 
-  # 3. Si sonarqube pasa, ejecuta tests
-  call-test:
-    needs: call-pre-commit
-    uses: ./.github/workflows/test.yml
+#  sonar:
+#    needs: test
+#    uses: AbelGRubio/github-actions-templates/.github/workflows/sonarqube.yml@v0.0.1
+#    secrets:
+#      PR_TOKEN_USER: ${{ secrets.PR_TOKEN_USER }}
 
-  # 4. Si tests pasan, ejecuta semantic-release
-  call-release:
-    needs: call-test
-    if: github.event_name == 'push'
+  approve-release:
+    needs: test
+    if: |
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')) ||
+      (github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - run: echo "Release approved by user"
+
+  release:
+    needs: approve-release
     permissions:
-      contents: write   # Para crear el Tag y el Release
-      issues: write     # A veces Semantic Release comenta en issues
-      pull-requests: write
+      contents: write
       packages: write
-    uses: ./.github/workflows/semantic-release.yml
-    secrets: inherit
+    uses: AbelGRubio/github-actions-templates/.github/workflows/semantic-release.yml@v0.0.1
+    secrets:
+      PR_TOKEN_USER: ${{ secrets.PR_TOKEN_USER }}
 
-  # 5. Nuevo Stage: Documentación
-  call-docs:
-    needs: call-release
+  docs:
+    needs: [ test, release ]
+    if: |
+      always() &&
+      (needs.release.result == 'success') && needs.test.result == 'success' &&
+      github.ref == 'refs/heads/main'
     permissions:
-      contents: write   # Para crear el Tag y el Release
-    uses: ./.github/workflows/docs.yml
+      contents: write
+    uses: AbelGRubio/github-actions-templates/.github/workflows/docs.yml@v0.0.1
 
-
-  # 6. Si release pasa, construye docker
-#  call-docker:
-#    needs: call-release
-#    if: github.event_name == 'push'
-#    uses: ./.github/workflows/docker-publish.yml
+#  docker:
+#    needs: [test, release]
+#    if: |
+#      always() && github.event_name == 'push' &&
+#      vars.ENABLE_PYPI_PUBLISH == 'true' &&
+#      (github.ref == 'refs/heads/main' || needs.release.result == 'success')
+#    permissions:
+#      packages: write
+#      contents: read
+#    uses: AbelGRubio/github-actions-templates/.github/workflows/docker-build-publish.yml@v0.0.1
 #    secrets: inherit
-
-  # 7. Finalmente, el escaneo de seguridad
-#  call-zap:
-#    needs: call-docker
-#    if: github.event_name == 'push'
-#    uses: ./.github/workflows/owasp-zap.yml

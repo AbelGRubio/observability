@@ -5,4 +5,6 @@ description = "Fastapi to control the HDAS remotly"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "spotdl>=4.5.2",
+]
