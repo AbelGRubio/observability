@@ -12,11 +12,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from observe_core import AuthMiddleware, SessionMiddleware
 from observe_core.logger import get_logger
 from prometheus_fastapi_instrumentator import Instrumentator
-from observe_api.lifespan import lifespan
+
 from observe_api.config import (
     __version__,
     get_app_settings,
 )
+from observe_api.lifespan import lifespan
 from observe_api.routers import api_router, v1_router
 
 logger = get_logger(__name__)
@@ -34,8 +35,10 @@ def define_app(add_auth: bool = False) -> FastAPI:
 
     """
     app = FastAPI(
-        title="Observer Controller", summary="Observer controller", version=__version__,
-        lifespan=lifespan
+        title="Observer Controller",
+        summary="Observer controller",
+        version=__version__,
+        lifespan=lifespan,
     )
 
     app.include_router(router=api_router, tags=["Router 1: API endpoints"])

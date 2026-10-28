@@ -37,7 +37,6 @@ def architect_design_prompt(task_description: str) -> str:
     Returns:
         The final prompt string ready to be sent to an LLM.
     """
-
     # 1. Load the template relative to the package. In production the file
     # should exist under the package data (see packaging rules in pyproject).
     template_path = Path("prompts/architect-design.md")

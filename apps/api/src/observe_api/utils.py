@@ -14,4 +14,4 @@ def get_s3_client() -> BaseClient:
     y se reutilice en toda la aplicación.
     """
     endpoint_url = os.getenv("AWS_S3_ENDPOINT_URL", None)
-    return boto3.client('s3', endpoint_url=endpoint_url, verify=False)
+    return boto3.client("s3", endpoint_url=endpoint_url, verify=False)

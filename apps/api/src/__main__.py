@@ -1,9 +1,8 @@
 """Entry point."""
 
 import uvicorn
-from observe_core.logger import get_logger, propague_loggers
-
 from observe_api import configure_app, define_app, get_app_settings
+from observe_core.logger import get_logger, propague_loggers
 
 logger = get_logger(__name__)
 

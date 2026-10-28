@@ -19,10 +19,10 @@ try:
     from rich.logging import RichHandler
     from rich.table import Table
     from rich.theme import Theme
+
     HAS_RICH = True
 except ImportError:
     HAS_RICH = False
-    # Definimos tipos dummy o None para que el código no falle si se usan de forma estática
     Console = Any
     RichHandler = Any
     Table = Any
@@ -40,6 +40,8 @@ def default_handler(obj: Any) -> str:
 
 
 class JsonFormatter(logging.Formatter):
+    """-Json Formater."""
+
     def format(self, record: logging.LogRecord) -> str:
         """Format a log record as JSON."""
         log_data = record.__dict__
@@ -49,19 +51,20 @@ class JsonFormatter(logging.Formatter):
 
 
 class UvicornFilter(logging.Filter):
-    def filter(self, record):
-        # Filtra específicamente el nombre del logger
+    """Uvicorn filter."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """Filtrer by logger name."""
         return not record.name.startswith("uvicorn.access")
 
 
 class DictNormalizerFilter(logging.Filter):
     """Convierte diccionarios de logs (como los de structlog/LangGraph) en strings bonitos."""
+
     def filter(self, record: logging.LogRecord) -> bool:
-        # print("entra aqui")
+        """Filter."""
         if isinstance(record.msg, dict):
-            # Extraemos lo importante del dict para que sea legible en consola
             event = record.msg.get("event", "")
-            # Convertimos el resto del dict en una cadena limpia
             details = {k: v for k, v in record.msg.items() if k != "event"}
             record.msg = f"{event} | {details}"
         return True
@@ -155,9 +158,9 @@ class LoggerApi(logging.Logger):
             formatter = JsonFormatter()
         else:
             base_format = "%(name)s\t%(threadName)s\t%(message)s"
-            _format = f"%(asctime)s\t{base_format}" if not HAS_RICH else base_format
+            format_ = f"%(asctime)s\t{base_format}" if not HAS_RICH else base_format
 
-            formatter = logging.Formatter(_format, datefmt="[%Y-%m-%d %H:%M:%S]")
+            formatter = logging.Formatter(format_, datefmt="[%Y-%m-%d %H:%M:%S]")
 
         console_handler.setFormatter(formatter)
         root.addHandler(console_handler)
@@ -274,27 +277,27 @@ def get_logger(name: str) -> LoggerApi:
     return logging.getLogger(name)
 
 
-def propague_loggers(no_propagate_prefixes=None):
-    """
-    Configura loggers:
+def propague_loggers(no_propagate_prefixes: list = []):
+    """Configura loggers.
+
     - Por defecto, propagan y nivel DEBUG.
     - Si el nombre empieza con un prefijo de la lista, se desactiva la propagación.
     """
     # Valores por defecto si la lista es None
-    if no_propagate_prefixes is None:
+    if len(no_propagate_prefixes) == 0:
         no_propagate_prefixes = ["boto3", "urllib3", "botocore", "s3transfer", "bcdocs"]
 
     # Obtenemos todos los loggers conocidos
     loggers = logging.Logger.manager.loggerDict.keys()
 
     for n in loggers:
-        _logger = logging.getLogger(n)
+        log_ = logging.getLogger(n)
 
         # Comprobar si el logger empieza por alguno de los prefijos
         if any(n.startswith(prefix) for prefix in no_propagate_prefixes):
-            _logger.handlers = []
-            _logger.propagate = False
+            log_.handlers = []
+            log_.propagate = False
         else:
-            _logger.handlers = []
-            _logger.propagate = True
-            _logger.setLevel(logging.DEBUG)
+            log_.handlers = []
+            log_.propagate = True
+            log_.setLevel(logging.DEBUG)

@@ -33,7 +33,6 @@ def load_md_file(filename: str) -> str:
         File content as a UTF-8 string. If the file does not exist, returns
         a simple error message string (suitable for debugging).
     """
-
     # Build a path relative to the package execution root. In production the
     # `resources/` directory should be included as package data.
     filepath = Path("resources") / filename
@@ -50,7 +49,6 @@ def read_documentation(filename: str) -> str:
 
     Example URI: `file://docs/software_engineering_principles.md`.
     """
-
     return load_md_file(filename)
 
 
@@ -61,12 +59,10 @@ def read_conventions() -> str:
     This handler maps the logical resource `file://docs/conventions` to the
     physical file `resources/conventions.md`.
     """
-
     return load_md_file("conventions.md")
 
 
 @my_mcp_server.resource("file://docs/agents", mime_type="text/markdown")
 def read_agents() -> str:
     """Return the `AGENTS.md` documentation from the resources folder."""
-
     return load_md_file("agents.md")

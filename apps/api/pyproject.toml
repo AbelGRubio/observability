@@ -8,12 +8,25 @@ dependencies = [
   "fastapi>=0.115.12",
   "boto3>=1.43.38",
   "python-multipart>=0.0.32",
+    "httpx2"
 ]
 
 
-[tool.uv.sources]
-observe-core = { path = "../../libs/observe_core", editable = false }
+# [tool.uv.sources]
+# observe-core = { path = "../../libs/observe_core", editable = false }
 
+[project.optional-dependencies]
+observe_core = [
+    "observe-core",
+]
+
+[tool.uv.sources]
+observe-core = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    "../../libs/observe_core",
+]
 
 
 [dependency-groups]
